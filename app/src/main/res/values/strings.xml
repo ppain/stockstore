@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">stockstore</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="sigin">Войти</string>
+    <string name="signup">Создать аккаунт</string>
+</resources>
