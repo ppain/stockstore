@@ -1,4 +1,4 @@
-package com.paint.stockstore;
+package com.paint.stockstore.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +10,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.paint.stockstore.R;
+
 public class LoginActivity extends AppCompatActivity {
 
-    EditText textLogin;
-    EditText textPassword;
+    EditText textLogin, textPassword;
     Button buttonLogin;
 
     @Override
@@ -62,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = textLogin.getText().toString();
         String password = textPassword.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
+        // retrologic
     }
 
     public void onLoginFailed() {

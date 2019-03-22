@@ -1,20 +1,19 @@
-package com.paint.stockstore;
+package com.paint.stockstore.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.paint.stockstore.R;
 
 
 public class RegActivity extends AppCompatActivity {
 
-    EditText textLogin;
-    EditText textPassword;
+    EditText textLogin, textPassword;
     Button buttonReg;
 
     @Override
@@ -52,7 +51,7 @@ public class RegActivity extends AppCompatActivity {
         String email = textLogin.getText().toString();
         String password = textPassword.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
+        //retrologic
     }
 
     public void onLoginFailed() {
