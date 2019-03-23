@@ -1,10 +1,10 @@
-package com.paint.stockstore.service;
+package com.paint.stockstore.service.request;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface RequestWeather {
+public interface RequestLogin {
 
 //    @GET("weather")
 //    Call<schemaWeather> getWeather(

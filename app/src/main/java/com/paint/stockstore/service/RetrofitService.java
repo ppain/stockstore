@@ -1,6 +1,7 @@
 package com.paint.stockstore.service;
 
 import com.paint.stockstore.BuildConfig;
+import com.paint.stockstore.service.request.RequestLogin;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -9,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitService {
     private static RetrofitService instance;
-    private static final String BASE_URL = "https://stocks-store-202.herokuapp.com/";
+    private static final String BASE_URL = "https://stocks-store-202.herokuapp.com/api/";
     private Retrofit retrofit;
 
     private RetrofitService() {
@@ -33,7 +34,7 @@ public class RetrofitService {
         return instance;
     }
 
-    public RequestWeather getApi() {
-        return retrofit.create(RequestWeather.class);
+    public RequestLogin getApi() {
+        return retrofit.create(RequestLogin.class);
     }
 }
