@@ -1,7 +1,6 @@
 package com.paint.stockstore.service;
 
 import com.paint.stockstore.BuildConfig;
-import com.paint.stockstore.service.request.RequestLogin;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -11,8 +10,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitService {
     private static RetrofitService instance;
     private static final String BASE_URL = "https://stocks-store-202.herokuapp.com/api/";
+//    private static final String BASE_URL = "http://34.225.219.245/api/";
     private Retrofit retrofit;
 
+    //TODO remove loggingInterceptor
     private RetrofitService() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
@@ -34,7 +35,7 @@ public class RetrofitService {
         return instance;
     }
 
-    public RequestLogin getApi() {
-        return retrofit.create(RequestLogin.class);
+    public StockApi getApi() {
+        return retrofit.create(StockApi.class);
     }
 }
