@@ -1,18 +1,16 @@
 package com.paint.stockstore.activity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.paint.stockstore.BuildConfig;
 import com.paint.stockstore.R;
+import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
 import com.paint.stockstore.service.RetrofitService;
-import com.paint.stockstore.service.TokenStore;
+import com.paint.stockstore.service.TokenStoreHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +29,11 @@ public class BriefcaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_briefcase);
 
+//        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setTitle(" UserName");
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_default_18dp);
+
         init();
     }
 
@@ -39,12 +42,53 @@ public class BriefcaseActivity extends AppCompatActivity {
         textPassword = (EditText) findViewById(R.id.textPassword);
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
 
-        TokenStore tokenStore = new TokenStore(this);
-        String token = tokenStore.getStore("accessToken");
+        getInfo();
+    }
+
+    private void getInfo(){
+        String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
+        reqestInfo(token);
+    }
+
+    private void getNewToken(){
+        String refreshToken = TokenStoreHelper.getStore(TokenStoreHelper.REFRESH_TOKEN);
+        reqestToken(refreshToken);
     }
 
 
-    private void getInfo(String token){
+    private void reqestToken(String refreshToken){
+
+        RetrofitService.getInstance()
+                .getApi()
+                .refreshAccessToken(refreshToken)
+                .enqueue(new Callback<AccessToken>() {
+
+                    @Override
+                    public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                        Log.d("testing", "refreshAccessToken/onResponse");
+                        int statusCode = response.code();
+                        if(statusCode == 200) {
+                            Log.d("testing", "refreshAccessToken/onResponse/response 200");
+                            AccessToken token = response.body();
+                            TokenStoreHelper.setStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
+                            TokenStoreHelper.setStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
+
+                            getInfo();
+                        } else {
+                            Log.d("testing", "refreshAccessToken/onResponse/something wrong");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AccessToken> call, Throwable t) {
+                        Log.d("testing", "refreshAccessToken/onFailure/all wrong");
+                    }
+                });
+    }
+
+
+    private void reqestInfo(String token){
+
         RetrofitService.getInstance()
                 .getApi()
                 .getAccountInfo(token)
@@ -58,12 +102,11 @@ public class BriefcaseActivity extends AppCompatActivity {
                             AccountInfo accountInfo = response.body();
 
                         } else if (statusCode == 403) {
-
+                            getNewToken();
                         }
                         else {
                             Log.d("testing", "getAccountInfo/onResponse/something wrong");
                         }
-
                     }
 
                     @Override
@@ -72,11 +115,6 @@ public class BriefcaseActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    ///api/account/info
-
-
-
 
 
 /*

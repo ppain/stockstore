@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.paint.stockstore.R;
+import com.paint.stockstore.service.TokenStoreHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,25 +16,35 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        TokenStoreHelper.init(getApplicationContext());
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 testAndStart();
             }
-        }, 1000);
+        }, 500);
     }
 
     void testAndStart(){
-        SharedPreferences sharedPrefs = getSharedPreferences("com.paint.stockstore", MODE_PRIVATE);
+
+        String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
         Intent intent;
-        if(sharedPrefs.contains("accessToken")){
-            intent = new Intent(MainActivity.this, BriefcaseActivity.class);
-        } else {
+        if(token.isEmpty()){
             intent = new Intent(MainActivity.this, LoginActivity.class);
+        } else {
+            intent = new Intent(MainActivity.this, BriefcaseActivity.class);
         }
 
-        //Intent intent = new Intent(this, Test.class);
+//        SharedPreferences sharedPrefs = getSharedPreferences("com.paint.stockstore", MODE_PRIVATE);
+//        Intent intent;
+//        if(sharedPrefs.contains("accessToken")){
+//            intent = new Intent(MainActivity.this, BriefcaseActivity.class);
+//        } else {
+//            intent = new Intent(MainActivity.this, LoginActivity.class);
+//        }
+
         startActivity(intent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }

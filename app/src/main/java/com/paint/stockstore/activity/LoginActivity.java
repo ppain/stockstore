@@ -19,6 +19,7 @@ import com.paint.stockstore.R;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.User;
 import com.paint.stockstore.service.RetrofitService;
+import com.paint.stockstore.service.TokenStoreHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -96,9 +97,8 @@ public class LoginActivity extends AppCompatActivity {
                         if(statusCode == 200) {
                             Log.d("testing", "AccessToken/onResponse/response 200");
                             AccessToken token = response.body();
-                            //preferences.edit().putBoolean("oauth.loggedIn", true).apply();
-                            preferences.edit().putString("accessToken", token.getAccessToken()).apply();
-                            preferences.edit().putString("refreshToken", token.getRefreshToken()).apply();
+                            TokenStoreHelper.setStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
+                            TokenStoreHelper.setStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
 
                             onSuccessfulAuth();
                         } else {

@@ -2,6 +2,7 @@ package com.paint.stockstore.service;
 
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
+import com.paint.stockstore.model.AccountInfoStock;
 import com.paint.stockstore.model.User;
 
 import retrofit2.Call;
@@ -41,13 +42,14 @@ public interface StockApi {
     Call<AccessToken> postLogin(
             @Body User user);
 
-    @GET("api/Profiles/GetProfile?id={id}")
-    Call<AccessToken> getUser(
+    @GET("account/info?id={id}")
+    Call<AccountInfoStock> geTest(
             @Path("id") String id,
             @Header("Authorization") String token);
 
     @GET("account/info")
     Call<AccountInfo> getAccountInfo(
+//    Call<AccountInfo> getAccountInfo();
             @Header("Authorization") String token);
 
     @GET("/api/stocks")

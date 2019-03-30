@@ -25,10 +25,10 @@ public class LoginHelper {
                             Log.d("testing", "AccessToken/onResponse/response 200");
                             AccessToken token = response.body();
                             //preferences.edit().putBoolean("oauth.loggedIn", true).apply();
-                            preferences.edit().putString("accessToken", token.getAccessToken()).apply();
-                            preferences.edit().putString("refreshToken", token.getRefreshToken()).apply();
+                            TokenStoreHelper.setStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
+                            TokenStoreHelper.setStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
 
-                            onSuccessfulAuth();
+                            //onSuccessfulAuth();
                         } else {
                             Log.d("testing", "AccessToken/onResponse/something wrong");
                         }

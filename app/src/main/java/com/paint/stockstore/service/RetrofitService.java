@@ -10,16 +10,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitService {
     private static RetrofitService instance;
     private static final String BASE_URL = "https://stocks-store-202.herokuapp.com/api/";
-//    private static final String BASE_URL = "http://34.225.219.245/api/";
     private Retrofit retrofit;
 
-    //TODO remove loggingInterceptor
+
     private RetrofitService() {
+
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
-                .build();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
+        //okHttpBuilder.addInterceptor(new TokenInterceptor());
+
+        if (BuildConfig.DEBUG) {
+            okHttpBuilder.addInterceptor(interceptor);
+        }
+
+        OkHttpClient client = okHttpBuilder.build();
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
