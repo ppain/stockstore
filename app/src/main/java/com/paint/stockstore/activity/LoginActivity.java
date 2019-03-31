@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,8 +30,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
 
-    EditText textLogin, textPassword;
-    Button buttonLogin;
+    private EditText textLogin, textPassword;
+    private Button buttonLogin;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,9 @@ public class LoginActivity extends AppCompatActivity {
         textPassword = (EditText) findViewById(R.id.textPassword);
         textPassword.setText("12345678");
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
+        progressBar = findViewById(R.id.progressBar);
 
+        showProgress(false);
         buttonLogin.setText(R.string.sigin);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
 
@@ -69,6 +73,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signin() {
+
+        showProgress(true);
 
         if (!validate()) {
             onLoginFailed();
@@ -100,8 +106,10 @@ public class LoginActivity extends AppCompatActivity {
                             TokenStoreHelper.setStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
                             TokenStoreHelper.setStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
 
+                            showProgress(false);
                             onSuccessfulAuth();
                         } else {
+                            showProgress(false);
                             Log.d("testing", "AccessToken/onResponse/something wrong");
                             showError(response.errorBody().toString());
                         }
@@ -109,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<AccessToken> call, Throwable t) {
+                        showProgress(false);
                         Log.d("testing", "AccessToken/onFailure/all wrong");
                         showError(t.toString());
                     }
@@ -155,5 +164,9 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, BriefcaseActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    private void showProgress(boolean visible) {
+        progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 }

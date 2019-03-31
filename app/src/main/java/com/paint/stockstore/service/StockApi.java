@@ -21,10 +21,10 @@ public interface StockApi {
     @FormUrlEncoded
     @POST("auth/refresh")
     Call<AccessToken> refreshAccessToken(
+            @Header("Authorization") String token,
             @Field("refreshToken") String refreshToken);
 
     @Headers("Content-Type: application/json")
-    //@FormUrlEncoded
     @POST("auth/signup")
     Call<AccessToken> postReg(
             @Body User user);
@@ -37,7 +37,6 @@ public interface StockApi {
 //            @Field("password") String password);
 
     @Headers("Content-Type: application/json")
-    //@FormUrlEncoded
     @POST("auth/signin")
     Call<AccessToken> postLogin(
             @Body User user);
@@ -49,7 +48,6 @@ public interface StockApi {
 
     @GET("account/info")
     Call<AccountInfo> getAccountInfo(
-//    Call<AccountInfo> getAccountInfo();
             @Header("Authorization") String token);
 
     @GET("/api/stocks")

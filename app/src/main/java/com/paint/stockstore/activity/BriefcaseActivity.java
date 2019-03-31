@@ -51,16 +51,17 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
     private void getNewToken(){
+        String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
         String refreshToken = TokenStoreHelper.getStore(TokenStoreHelper.REFRESH_TOKEN);
-        reqestToken(refreshToken);
+        reqestToken(token, refreshToken);
     }
 
 
-    private void reqestToken(String refreshToken){
+    private void reqestToken(String token, String refreshToken){
 
         RetrofitService.getInstance()
                 .getApi()
-                .refreshAccessToken(refreshToken)
+                .refreshAccessToken(token, refreshToken)
                 .enqueue(new Callback<AccessToken>() {
 
                     @Override

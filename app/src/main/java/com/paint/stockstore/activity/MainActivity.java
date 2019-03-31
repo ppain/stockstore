@@ -30,11 +30,10 @@ public class MainActivity extends AppCompatActivity {
     void testAndStart(){
 
         String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
-        Intent intent;
         if(token.isEmpty()){
-            intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
         } else {
-            intent = new Intent(MainActivity.this, BriefcaseActivity.class);
+            startActivity(new Intent(MainActivity.this, BriefcaseActivity.class));
         }
 
 //        SharedPreferences sharedPrefs = getSharedPreferences("com.paint.stockstore", MODE_PRIVATE);
@@ -45,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 //            intent = new Intent(MainActivity.this, LoginActivity.class);
 //        }
 
-        startActivity(intent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 }
