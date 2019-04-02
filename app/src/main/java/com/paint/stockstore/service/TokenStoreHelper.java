@@ -15,7 +15,7 @@ public class TokenStoreHelper {
 
     public static void init(Context context){
         if(sharedPref == null) {
-            sharedPref = context.getSharedPreferences(context.getPackageName(), Activity.MODE_PRIVATE);
+            sharedPref = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
         }
     }
 

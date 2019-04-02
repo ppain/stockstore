@@ -102,7 +102,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                             Log.d("testing", "getAccountInfo/onResponse/response 200");
                             AccountInfo accountInfo = response.body();
 
-                        } else if (statusCode == 403) {
+                        } else if (statusCode == 404) {
                             getNewToken();
                         }
                         else {
@@ -135,8 +135,5 @@ public class BriefcaseActivity extends AppCompatActivity {
                 .subscribe(loginButton::setEnabled);
     }
     */
-
-
-
 
 }

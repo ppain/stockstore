@@ -4,6 +4,6 @@
     android:layout_height="fill_parent"
     android:fitsSystemWindows="true">
 
-    <include layout="@layout/auth"/>
+    <include layout="@layout/part_auth"/>
 
 </ScrollView>
