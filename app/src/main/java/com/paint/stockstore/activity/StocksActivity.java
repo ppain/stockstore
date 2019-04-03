@@ -24,7 +24,7 @@ public class StocksActivity extends Activity {
         final ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(createAdapter());
         final SwipeRefreshLayout refreshLayout = ((SwipeRefreshLayout) findViewById(R.id.swipe_container));
-        refreshLayout.setColorSchemeResources(R.color.colorGreen, R.color.colorRed, R.color.colorYellow);
+        refreshLayout.setColorSchemeResources(R.color.colorAccent);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

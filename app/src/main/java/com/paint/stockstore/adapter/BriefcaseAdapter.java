@@ -26,16 +26,11 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
 
 
     public class BriefcaseViewHolder extends RecyclerView.ViewHolder {
-        // Your holder should contain a member variable
-        // for any view that will be set as you render a row
+
         public TextView nameItem;
         public TextView costItem;
 
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each subview
         public BriefcaseViewHolder(View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
             super(itemView);
 
             nameItem = (TextView) itemView.findViewById(R.id.tv_name_item);
@@ -52,16 +47,28 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
 
     @Override
     public void onBindViewHolder(@NonNull BriefcaseViewHolder holder, int position) {
-        // Get the data model based on position
         TestModel model = data.get(position);
 
         holder.nameItem.setText(model.getName());
-        holder.nameItem.setText(model.getCost());
+        holder.costItem.setText(String.valueOf(model.getCost()));
     }
 
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+
+    // Clean all elements of the recycler
+    public void clear() {
+        data.clear();
+        notifyDataSetChanged();
+    }
+
+    // Add a list of items -- change to type used
+    public void addAll(List<TestModel> list) {
+        data.addAll(list);
+        notifyDataSetChanged();
     }
 
 }

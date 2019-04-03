@@ -1,6 +1,7 @@
 package com.paint.stockstore.activity;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,11 +29,9 @@ import retrofit2.Response;
 
 public class BriefcaseActivity extends AppCompatActivity {
 
-    EditText textLogin;
-    EditText textPassword;
-    Button buttonLogin;
-
-    List<TestModel> data;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private BriefcaseAdapter adapterBriefcase;
+    private List<TestModel> data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,20 +47,27 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
     void init() {
-        textLogin = (EditText) findViewById(R.id.textLogin);
-        textPassword = (EditText) findViewById(R.id.textPassword);
-        buttonLogin = (Button) findViewById(R.id.buttonAuth);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeMain);
+        //swipeRefreshLayout.setColorSchemeResources( R.color.colorAccent, R.color.colorPrimaryDark,R.color.colorPrimary);
+        swipeRefreshLayout.setColorSchemeResources( R.color.colorAccent);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapterBriefcase.clear();
+                getInfo();
+            }
+        });
+
 
         RecyclerView rvBriefcase = (RecyclerView) findViewById(R.id.listMain);
 
-        // Initialize contacts
-
 //        data = TestModel.generateData();
-//        // Create adapter passing in the sample user data
-//        BriefcaseAdapter adapter = new BriefcaseAdapter(data);
-//        rvBriefcase.setAdapter(adapter);
-//        rvBriefcase.setLayoutManager(new LinearLayoutManager(this));
+        adapterBriefcase = new BriefcaseAdapter(TestModel.generateData());
 
+        rvBriefcase.setAdapter(adapterBriefcase);
+        rvBriefcase.setLayoutManager(new LinearLayoutManager(this));
 
 
         getInfo();
@@ -69,17 +75,19 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     private void getInfo(){
         String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
-        reqestInfo(token);
+        requestInfo(token);
+        adapterBriefcase.addAll(TestModel.generateData());
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void getNewToken(){
         String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
         String refreshToken = TokenStoreHelper.getStore(TokenStoreHelper.REFRESH_TOKEN);
-        reqestToken(token, refreshToken);
+        requestToken(token, refreshToken);
     }
 
 
-    private void reqestToken(String token, String refreshToken){
+    private void requestToken(String token, String refreshToken){
 
         RetrofitService.getInstance()
                 .getApi()
@@ -110,7 +118,7 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
 
-    private void reqestInfo(String token){
+    private void requestInfo(String token){
 
         RetrofitService.getInstance()
                 .getApi()
@@ -123,6 +131,8 @@ public class BriefcaseActivity extends AppCompatActivity {
                         if(statusCode == 200) {
                             Log.d("testing", "getAccountInfo/onResponse/response 200");
                             AccountInfo accountInfo = response.body();
+
+                            swipeRefreshLayout.setRefreshing(false);
 
                         } else if (statusCode == 403) {
                             getNewToken();
