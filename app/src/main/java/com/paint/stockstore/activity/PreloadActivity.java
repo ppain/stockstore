@@ -29,11 +29,11 @@ public class PreloadActivity extends AppCompatActivity {
     void testAndStart(){
 
         String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
-//        if(token.isEmpty()){
-//            startActivity(new Intent(PreloadActivity.this, LoginActivity.class));
-//        } else {
-//            startActivity(new Intent(PreloadActivity.this, BriefcaseActivity.class));
-//        }
+        if(token.isEmpty()){
+            startActivity(new Intent(PreloadActivity.this, LoginActivity.class));
+        } else {
+            startActivity(new Intent(PreloadActivity.this, BriefcaseActivity.class));
+        }
 
 //        SharedPreferences sharedPrefs = getSharedPreferences("com.paint.stockstore", MODE_PRIVATE);
 //        Intent intent;
@@ -43,7 +43,8 @@ public class PreloadActivity extends AppCompatActivity {
 //            intent = new Intent(PreloadActivity.this, LoginActivity.class);
 //        }
 
-        startActivity(new Intent(PreloadActivity.this, StocksActivity.class));
+//        startActivity(new Intent(PreloadActivity.this, StocksActivity.class));
+//        startActivity(new Intent(PreloadActivity.this, BriefcaseActivity.class));
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 }

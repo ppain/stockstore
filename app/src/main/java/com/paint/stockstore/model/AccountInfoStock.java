@@ -17,7 +17,7 @@ public class AccountInfoStock {
     private String iconUrl;
 
     @SerializedName("price")
-    private int price;
+    private float price;
 
     @SerializedName("priceDelta")
     private float priceDelta;
@@ -25,7 +25,7 @@ public class AccountInfoStock {
     @SerializedName("count")
     private int count;
 
-    public AccountInfoStock(Long id, String code, String name, String iconUrl, int price, float priceDelta, int count) {
+    public AccountInfoStock(Long id, String code, String name, String iconUrl, float price, float priceDelta, int count) {
         this.id = id;
         this.code = code;
         this.name = name;

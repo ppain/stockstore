@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.paint.stockstore.BuildConfig;
@@ -30,6 +31,7 @@ public class RegActivity extends AppCompatActivity {
 
     EditText textLogin, textPassword;
     Button buttonReg;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,9 @@ public class RegActivity extends AppCompatActivity {
         textPassword.setText("12345678");
 
         buttonReg = (Button) findViewById(R.id.buttonAuth);
+        progressBar = findViewById(R.id.progressBar);
+
+        showProgress(false);
 
         buttonReg.setText(R.string.signup);
         buttonReg.setOnClickListener(new View.OnClickListener() {
@@ -139,5 +144,9 @@ public class RegActivity extends AppCompatActivity {
         Intent intent = new Intent(RegActivity.this, BriefcaseActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    private void showProgress(boolean visible) {
+        progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 }

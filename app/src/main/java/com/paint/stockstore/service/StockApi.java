@@ -19,25 +19,19 @@ import retrofit2.http.Query;
 public interface StockApi {
 
     @FormUrlEncoded
-    @POST("part_auth/refresh")
+    @POST("auth/refresh")
     Call<AccessToken> refreshAccessToken(
             @Header("Authorization") String token,
             @Field("refreshToken") String refreshToken);
 
     @Headers("Content-Type: application/json")
-    @POST("part_auth/signup")
+    @POST("auth/signup")
     Call<AccessToken> postReg(
             @Body User user);
 
-//    @FormUrlEncoded
-//    @Headers("Content-Type: application/x-www-form-urlencoded")
-//    @POST("part_auth/signup")
-//    Call<AccessToken> postReg(
-//            @Field("login") String login,
-//            @Field("password") String password);
 
     @Headers("Content-Type: application/json")
-    @POST("part_auth/signin")
+    @POST("auth/signin")
     Call<AccessToken> postLogin(
             @Body User user);
 
@@ -52,4 +46,12 @@ public interface StockApi {
 
     @GET("/api/stocks")
     Call<AccessToken> getUser();
+
+
+    //    @FormUrlEncoded
+//    @Headers("Content-Type: application/x-www-form-urlencoded")
+//    @POST("part_auth/signup")
+//    Call<AccessToken> postReg(
+//            @Field("login") String login,
+//            @Field("password") String password);
 }

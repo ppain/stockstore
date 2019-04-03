@@ -10,12 +10,12 @@ public class AccountInfo {
     private String name;
 
     @SerializedName("balance")
-    private int balance;
+    private float balance;
 
     @SerializedName("stocks")
     private List<AccountInfoStock> stocks;
 
-    public AccountInfo(String name, int balance, List<AccountInfoStock> stocks) {
+    public AccountInfo(String name, float balance, List<AccountInfoStock> stocks) {
         this.name = name;
         this.balance = balance;
         this.stocks = stocks;

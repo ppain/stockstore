@@ -2,15 +2,23 @@ package com.paint.stockstore.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.paint.stockstore.R;
+import com.paint.stockstore.adapter.BriefcaseAdapter;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
+import com.paint.stockstore.model.TestModel;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.TokenStoreHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,15 +32,17 @@ public class BriefcaseActivity extends AppCompatActivity {
     EditText textPassword;
     Button buttonLogin;
 
+    List<TestModel> data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_briefcase);
 
-//        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        getSupportActionBar().setTitle(" UserName");
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_default_18dp);
+////        getSupportActionBar().setDisplayShowTitleEnabled(true);
+//        getSupportActionBar().setTitle(" UserName");
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        getSupportActionBar().setIcon(R.drawable.ic_default_18dp);
 
         init();
     }
@@ -41,6 +51,18 @@ public class BriefcaseActivity extends AppCompatActivity {
         textLogin = (EditText) findViewById(R.id.textLogin);
         textPassword = (EditText) findViewById(R.id.textPassword);
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
+
+        RecyclerView rvBriefcase = (RecyclerView) findViewById(R.id.listMain);
+
+        // Initialize contacts
+
+//        data = TestModel.generateData();
+//        // Create adapter passing in the sample user data
+//        BriefcaseAdapter adapter = new BriefcaseAdapter(data);
+//        rvBriefcase.setAdapter(adapter);
+//        rvBriefcase.setLayoutManager(new LinearLayoutManager(this));
+
+
 
         getInfo();
     }
@@ -102,7 +124,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                             Log.d("testing", "getAccountInfo/onResponse/response 200");
                             AccountInfo accountInfo = response.body();
 
-                        } else if (statusCode == 404) {
+                        } else if (statusCode == 403) {
                             getNewToken();
                         }
                         else {
@@ -116,6 +138,8 @@ public class BriefcaseActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 
 
 /*

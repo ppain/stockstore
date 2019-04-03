@@ -24,7 +24,7 @@ public class StocksActivity extends Activity {
         final ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(createAdapter());
         final SwipeRefreshLayout refreshLayout = ((SwipeRefreshLayout) findViewById(R.id.swipe_container));
-        //refreshLayout.setColor(R.color.progress_red, R.color.progress_green, R.color.progress_blue, R.color.progress_orange);
+        refreshLayout.setColorSchemeResources(R.color.colorGreen, R.color.colorRed, R.color.colorYellow);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -34,7 +34,7 @@ public class StocksActivity extends Activity {
                         listView.setAdapter(createAdapter());
                         refreshLayout.setRefreshing(false);
                     }
-                }, 3000);
+                }, 500);
             }
         });
 
@@ -59,7 +59,7 @@ public class StocksActivity extends Activity {
         List<String> data = new ArrayList<String>();
         Random random = new Random(System.currentTimeMillis());
         for (int i = 0; i < 20; i++) {
-            data.add(String.valueOf(random.nextInt(1000)));
+            data.add(String.valueOf(random.nextInt(10000)));
         }
         return data;
     }
