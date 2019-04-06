@@ -6,23 +6,23 @@ import java.util.Random;
 
 public class TestModel {
     private String name;
-    private int cost;
+    private int price;
 
-    public TestModel(String name, int cost) {
+    public TestModel(String name, int price) {
         this.name = name;
-        this.cost = cost;
+        this.price = price;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getCost() {
-        return cost;
+    public int getPrice() {
+        return price;
     }
 
     public static List<TestModel> generateData() {
-        List<TestModel> data = new ArrayList<TestModel>();
+        List<TestModel> data = new ArrayList<>();
         Random random = new Random(System.currentTimeMillis());
         for (int i = 1; i < 30; i++) {
             data.add(new TestModel("Item_" + i, random.nextInt(1000)));

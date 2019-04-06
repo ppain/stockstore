@@ -6,9 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paint.stockstore.R;
+import com.paint.stockstore.model.AccountInfoStock;
 import com.paint.stockstore.model.TestModel;
 
 import java.util.ArrayList;
@@ -18,23 +20,29 @@ import java.util.Random;
 
 public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.BriefcaseViewHolder>{
 
-    private List<TestModel> data;
+    List<AccountInfoStock> data = new ArrayList<>();
 
-    public BriefcaseAdapter(List<TestModel> data) {
-        this.data = data;
+    public BriefcaseAdapter(List<AccountInfoStock> data) {
+        this.data.addAll(data);
     }
 
 
     public class BriefcaseViewHolder extends RecyclerView.ViewHolder {
 
+        public ImageView iconUrlItem;
         public TextView nameItem;
-        public TextView costItem;
+        public TextView priceItem;
+        public TextView priceDeltaItem;
+        public TextView countItem;
 
         public BriefcaseViewHolder(View itemView) {
             super(itemView);
 
+            iconUrlItem = (ImageView) itemView.findViewById(R.id.im_iconUrl_item);
             nameItem = (TextView) itemView.findViewById(R.id.tv_name_item);
-            costItem = (TextView) itemView.findViewById(R.id.tv_cost_item);
+            priceItem = (TextView) itemView.findViewById(R.id.tv_price_item);
+            priceDeltaItem = (TextView) itemView.findViewById(R.id.tv_priceDelta_item);
+            countItem = (TextView) itemView.findViewById(R.id.tv_count_item);
         }
     }
 
@@ -47,10 +55,14 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
 
     @Override
     public void onBindViewHolder(@NonNull BriefcaseViewHolder holder, int position) {
-        TestModel model = data.get(position);
+        AccountInfoStock model = data.get(position);
 
+        //TODO create color for icon on name_hash
+        //holder.iconUrlItem.setImageIcon();
         holder.nameItem.setText(model.getName());
-        holder.costItem.setText(String.valueOf(model.getCost()));
+        holder.priceItem.setText(String.valueOf(model.getPrice()) + " руб");
+        holder.priceDeltaItem.setText(String.valueOf(model.getPriceDelta()));
+        holder.countItem.setText(String.valueOf(model.getCount()) + "шт");
     }
 
     @Override
@@ -59,16 +71,15 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
     }
 
 
-    // Clean all elements of the recycler
-    public void clear() {
-        data.clear();
-        notifyDataSetChanged();
-    }
+    public void swapList(List<AccountInfoStock> list) {
+        if (data != null) {
+            data.clear();
+        }
+        data = list;
 
-    // Add a list of items -- change to type used
-    public void addAll(List<TestModel> list) {
-        data.addAll(list);
-        notifyDataSetChanged();
+        if (data != null) {
+            notifyDataSetChanged();
+        }
     }
 
 }

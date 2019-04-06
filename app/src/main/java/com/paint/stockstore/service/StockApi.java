@@ -19,6 +19,7 @@ import retrofit2.http.Query;
 public interface StockApi {
 
     @FormUrlEncoded
+    @Headers("Content-Type: application/json")
     @POST("auth/refresh")
     Call<AccessToken> refreshAccessToken(
             @Header("Authorization") String token,
@@ -28,7 +29,6 @@ public interface StockApi {
     @POST("auth/signup")
     Call<AccessToken> postReg(
             @Body User user);
-
 
     @Headers("Content-Type: application/json")
     @POST("auth/signin")

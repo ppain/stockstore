@@ -88,8 +88,8 @@ public class RegActivity extends AppCompatActivity {
                         if(statusCode == 200) {
                             Log.d("testing", "AccessToken/onResponse/response 200");
                             AccessToken token = response.body();
-                            TokenStoreHelper.setStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
-                            TokenStoreHelper.setStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
+                            TokenStoreHelper.saveStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
+                            TokenStoreHelper.saveStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
 
                             onSuccessfulAuth();
                         } else {

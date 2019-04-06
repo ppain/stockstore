@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding.widget.RxTextView;
 import com.paint.stockstore.BuildConfig;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.AccessToken;
@@ -25,6 +26,7 @@ import com.paint.stockstore.service.TokenStoreHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Observable;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -103,8 +105,8 @@ public class LoginActivity extends AppCompatActivity {
                         if(statusCode == 200) {
                             Log.d("testing", "AccessToken/onResponse/response 200");
                             AccessToken token = response.body();
-                            TokenStoreHelper.setStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
-                            TokenStoreHelper.setStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
+                            TokenStoreHelper.saveStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
+                            TokenStoreHelper.saveStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
 
                             showProgress(false);
                             onSuccessfulAuth();
@@ -169,4 +171,23 @@ public class LoginActivity extends AppCompatActivity {
     private void showProgress(boolean visible) {
         progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
+
+
+
+//    public void trimAndFilterText(){
+//        RxTextView
+//                .textChanges(searchEditText)
+//                .map(text -> text.toString().trim())
+//                .filter(text -> text.length() != 0);
+//    }
+//
+//    public void loginAndPassword(){
+//        Observable
+//                .combineLatest(
+//                        RxTextView.textChanges(loginEditText),
+//                        RxTextView.textChanges(passwordEditText),
+//                        (login, password) -> login.length() > 0 && password.length() > 0)
+//                .subscribe(loginButton::setEnabled);
+//    }
+
 }

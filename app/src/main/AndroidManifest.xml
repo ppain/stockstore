@@ -23,6 +23,7 @@
         <activity android:name=".activity.RegActivity"> </activity>
         <activity android:name=".activity.BriefcaseActivity"> </activity>
         <activity android:name=".activity.StocksActivity"> </activity>
+        <activity android:name=".activity.HistoryActivity"> </activity>
     </application>
 
 </manifest>

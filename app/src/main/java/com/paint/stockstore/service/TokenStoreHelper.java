@@ -23,7 +23,7 @@ public class TokenStoreHelper {
         return sharedPref.getString(key, "");
     }
 
-    public static void setStore(String key, String value) {
+    public static void saveStore(String key, String value) {
         SharedPreferences.Editor prefsEditor = sharedPref.edit();
         prefsEditor.putString(key, value);
         prefsEditor.apply();
