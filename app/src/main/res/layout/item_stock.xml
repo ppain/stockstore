@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:background="?android:attr/selectableItemBackground"
-    android:id="@+id/item_briefcase">
+    android:id="@+id/item_stock">
 
     <ImageView
         android:id="@+id/im_iconUrl_item"
         android:padding="8dp"
         android:layout_width="64dp"
         android:layout_height="match_parent"
-        android:src="@drawable/baseline_business_center_black_48dp" />
+        android:src="@drawable/baseline_add_shopping_cart_black_48dp" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
             android:textSize="25sp" />
 
         <TextView
-            android:id="@+id/tv_count_item"
+            android:id="@+id/tv_code_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="2222"
@@ -47,14 +47,15 @@
             android:id="@+id/tv_price_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3333"
             android:textColor="@color/colorBlack"
+            android:text="3333"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tv_priceDelta_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:text="4444"
             android:textSize="15sp" />
     </LinearLayout>

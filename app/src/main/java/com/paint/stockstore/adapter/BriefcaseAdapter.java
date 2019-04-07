@@ -1,6 +1,5 @@
 package com.paint.stockstore.adapter;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,19 +9,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paint.stockstore.R;
-import com.paint.stockstore.model.AccountInfoStock;
-import com.paint.stockstore.model.TestModel;
+import com.paint.stockstore.model.InfoStock;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 
 public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.BriefcaseViewHolder>{
 
-    List<AccountInfoStock> data = new ArrayList<>();
+    List<InfoStock> data = new ArrayList<>();
 
-    public BriefcaseAdapter(List<AccountInfoStock> data) {
+    public BriefcaseAdapter(List<InfoStock> data) {
         this.data.addAll(data);
     }
 
@@ -55,7 +52,7 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
 
     @Override
     public void onBindViewHolder(@NonNull BriefcaseViewHolder holder, int position) {
-        AccountInfoStock model = data.get(position);
+        InfoStock model = data.get(position);
 
         //TODO create color for icon on name_hash
         //holder.iconUrlItem.setImageIcon();
@@ -71,7 +68,7 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
     }
 
 
-    public void swapList(List<AccountInfoStock> list) {
+    public void swapList(List<InfoStock> list) {
         if (data != null) {
             data.clear();
         }

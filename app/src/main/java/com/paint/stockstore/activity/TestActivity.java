@@ -19,7 +19,7 @@ public class TestActivity extends Activity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_stocks);
+            setContentView(R.layout.activity_stock);
 
             final ListView listView = (ListView) findViewById(R.id.list);
             listView.setAdapter(createAdapter());

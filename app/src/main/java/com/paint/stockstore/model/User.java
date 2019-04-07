@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
     @SerializedName("login")
-    String login;
+    private String login;
 
     @SerializedName("password")
-    String password;
+    private String password;
 
     public User(String login, String password ) {
         this.login = login;

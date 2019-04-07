@@ -18,7 +18,7 @@
             android:layout_marginTop="40dp"
             android:text="@string/signup"
             android:gravity="center"
-            android:textSize="20dp"/>
+            android:textSize="20sp"/>
 
     </LinearLayout>
 

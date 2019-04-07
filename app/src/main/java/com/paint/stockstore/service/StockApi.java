@@ -2,7 +2,9 @@ package com.paint.stockstore.service;
 
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
-import com.paint.stockstore.model.AccountInfoStock;
+import com.paint.stockstore.model.InfoStock;
+import com.paint.stockstore.model.RefreshToken;
+import com.paint.stockstore.model.Stock;
 import com.paint.stockstore.model.User;
 
 import retrofit2.Call;
@@ -18,12 +20,11 @@ import retrofit2.http.Query;
 
 public interface StockApi {
 
-    @FormUrlEncoded
     @Headers("Content-Type: application/json")
     @POST("auth/refresh")
     Call<AccessToken> refreshAccessToken(
             @Header("Authorization") String token,
-            @Field("refreshToken") String refreshToken);
+            @Body RefreshToken refreshToken);
 
     @Headers("Content-Type: application/json")
     @POST("auth/signup")
@@ -36,7 +37,7 @@ public interface StockApi {
             @Body User user);
 
     @GET("account/info?id={id}")
-    Call<AccountInfoStock> geTest(
+    Call<InfoStock> geTest(
             @Path("id") String id,
             @Header("Authorization") String token);
 
@@ -45,7 +46,13 @@ public interface StockApi {
             @Header("Authorization") String token);
 
     @GET("/api/stocks")
-    Call<AccessToken> getUser();
+    Call<Stock> getAccountInfoStockParam(
+            @Query("search") String search,
+            @Query("count") String count,
+            @Query("itemId") String itemId);
+
+    @GET("/api/stocks")
+    Call<Stock> getAccountInfoStock();
 
 
     //    @FormUrlEncoded

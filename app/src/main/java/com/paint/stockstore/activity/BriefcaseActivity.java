@@ -2,34 +2,26 @@ package com.paint.stockstore.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.BriefcaseAdapter;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
-import com.paint.stockstore.model.AccountInfoStock;
-import com.paint.stockstore.model.TestModel;
+import com.paint.stockstore.model.InfoStock;
+import com.paint.stockstore.model.RefreshToken;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.TokenStoreHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,8 +33,7 @@ public class BriefcaseActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private BriefcaseAdapter adapterBriefcase;
     private CollapsingToolbarLayout collapsingToolbar;
-    private RecyclerView rvBriefcase;
-    private List<AccountInfoStock> stocks = new ArrayList<>();
+    private List<InfoStock> stock = new ArrayList<>();
     private TextView tvName;
 
     @Override
@@ -61,16 +52,16 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     void init() {
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_briefcase));
         collapsingToolbar = findViewById(R.id.collapsingToolbarLayout);
         collapsingToolbar.setTitle("0 р");
 
         tvName = (TextView)findViewById(R.id.tv_name_item);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeMain);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_briefcase);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
-        rvBriefcase = (RecyclerView) findViewById(R.id.listBriefcase);
+        RecyclerView rvBriefcase = (RecyclerView) findViewById(R.id.list_briefcase);
         rvBriefcase.setLayoutManager(new LinearLayoutManager(this));
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -81,25 +72,18 @@ public class BriefcaseActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.buttonHistory).setOnClickListener(v -> startActivity(new Intent(
+        findViewById(R.id.button_history).setOnClickListener(v -> startActivity(new Intent(
                 BriefcaseActivity.this, HistoryActivity.class
         )));
 
-        findViewById(R.id.fabStocks).setOnClickListener(v -> startActivity(new Intent(
-                BriefcaseActivity.this, StocksActivity.class
+        findViewById(R.id.fab_stock).setOnClickListener(v -> startActivity(new Intent(
+                BriefcaseActivity.this, StockActivity.class
         )));
 
-
-        initializeAdapter();
+        adapterBriefcase = new BriefcaseAdapter(stock);
+        rvBriefcase.setAdapter(adapterBriefcase);
 
         getInfo();
-    }
-
-
-    //TODO cut
-    private void initializeAdapter() {
-        adapterBriefcase = new BriefcaseAdapter(stocks);
-        rvBriefcase.setAdapter(adapterBriefcase);
     }
 
 
@@ -114,14 +98,14 @@ public class BriefcaseActivity extends AppCompatActivity {
         //TODO add test_inet on preloader
 //        adapterBriefcase = new BriefcaseAdapter(accountInfo.getStocks());
 
-        adapterBriefcase.swapList(accountInfo.getStocks());
+        adapterBriefcase.swapList(accountInfo.getStock());
         swipeRefreshLayout.setRefreshing(false);
 
 //        final Handler handler = new Handler();
 //        handler.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-//                adapterBriefcase.swapList(accountInfo.getStocks());
+//                adapterBriefcase.swapList(accountInfo.getStock());
 //                swipeRefreshLayout.setRefreshing(false);
 //            }
 //        }, 1000);
@@ -171,7 +155,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
 
-    private void requestToken(String token, String refreshToken){
+    private void requestToken(String token, RefreshToken refreshToken){
 
         RetrofitService.getInstance()
                 .getApi()
@@ -206,7 +190,8 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     private void getNewToken(){
         String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
-        String refreshToken = TokenStoreHelper.getStore(TokenStoreHelper.REFRESH_TOKEN);
+        String tokenRefresh = TokenStoreHelper.getStore(TokenStoreHelper.REFRESH_TOKEN);
+        RefreshToken refreshToken = new RefreshToken(tokenRefresh);
         requestToken(token, refreshToken);
     }
 
