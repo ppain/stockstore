@@ -11,7 +11,7 @@
         android:padding="8dp"
         android:layout_width="64dp"
         android:layout_height="match_parent"
-        android:src="@drawable/baseline_add_circle_outline_black_48dp" />
+        android:src="@drawable/baseline_business_center_black_48dp" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"

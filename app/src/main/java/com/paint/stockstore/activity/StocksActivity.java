@@ -1,67 +1,30 @@
 package com.paint.stockstore.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.paint.stockstore.R;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
-public class StocksActivity extends Activity {
+public class StocksActivity extends AppCompatActivity {
+
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stocks);
 
-        final ListView listView = (ListView) findViewById(R.id.list);
-        listView.setAdapter(createAdapter());
-        final SwipeRefreshLayout refreshLayout = ((SwipeRefreshLayout) findViewById(R.id.swipe_container));
-        refreshLayout.setColorSchemeResources(R.color.colorAccent);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        listView.setAdapter(createAdapter());
-                        refreshLayout.setRefreshing(false);
-                    }
-                }, 500);
-            }
-        });
-
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int topPosition = (listView == null || listView.getChildCount() == 0) ? 0 : listView.getChildAt(0).getTop();
-                refreshLayout.setEnabled(topPosition >= 0);
-            }
-        });
+        init();
     }
 
-    private BaseAdapter createAdapter() {
-        return new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, generateData());
+    void init() {
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
     }
 
-    private List<String> generateData() {
-        List<String> data = new ArrayList<String>();
-        Random random = new Random(System.currentTimeMillis());
-        for (int i = 0; i < 20; i++) {
-            data.add(String.valueOf(random.nextInt(10000)));
-        }
-        return data;
-    }
 
 }

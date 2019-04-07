@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +35,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-//import io.reactivex.Observable;
 
 public class BriefcaseActivity extends AppCompatActivity {
 
@@ -84,6 +84,11 @@ public class BriefcaseActivity extends AppCompatActivity {
         findViewById(R.id.buttonHistory).setOnClickListener(v -> startActivity(new Intent(
                 BriefcaseActivity.this, HistoryActivity.class
         )));
+
+        findViewById(R.id.fabStocks).setOnClickListener(v -> startActivity(new Intent(
+                BriefcaseActivity.this, StocksActivity.class
+        )));
+
 
         initializeAdapter();
 
@@ -143,7 +148,6 @@ public class BriefcaseActivity extends AppCompatActivity {
                         Log.d("testing", "getAccountInfo/onResponse");
                         swipeRefreshLayout.setRefreshing(false);
                         int statusCode = response.code();
-
                         if(statusCode == 200) {
                             Log.d("testing", "getAccountInfo/onResponse/response 200");
                             setInfo(response.body());
@@ -184,6 +188,9 @@ public class BriefcaseActivity extends AppCompatActivity {
                             saveNewToken(token.getAccessToken(), token.getRefreshToken());
 
                             getInfo();
+                        } else if (statusCode == 400) {
+                            startActivity(new Intent(
+                                    BriefcaseActivity.this, LoginActivity.class));
                         } else {
                             Log.d("testing", "refreshAccessToken/onResponse/something wrong");
                         }
