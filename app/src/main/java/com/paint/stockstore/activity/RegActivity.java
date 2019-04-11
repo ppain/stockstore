@@ -1,8 +1,6 @@
 package com.paint.stockstore.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +11,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.paint.stockstore.BuildConfig;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.User;
+import com.paint.stockstore.service.Utils;
 import com.paint.stockstore.service.RetrofitService;
-import com.paint.stockstore.service.TokenStoreHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -88,8 +85,8 @@ public class RegActivity extends AppCompatActivity {
                         if(statusCode == 200) {
                             Log.d("testing", "AccessToken/onResponse/response 200");
                             AccessToken token = response.body();
-                            TokenStoreHelper.saveStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
-                            TokenStoreHelper.saveStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
+                            Utils.saveStore(Utils.ACCESS_TOKEN, token.getAccessToken());
+                            Utils.saveStore(Utils.REFRESH_TOKEN, token.getRefreshToken());
 
                             onSuccessfulAuth();
                         } else {

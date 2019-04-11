@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:singleLine="true" />
+        android:inputType="" android:singleLine="true" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

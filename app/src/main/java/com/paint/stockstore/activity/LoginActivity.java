@@ -15,18 +15,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.paint.stockstore.BuildConfig;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.User;
+import com.paint.stockstore.service.Utils;
 import com.paint.stockstore.service.RetrofitService;
-import com.paint.stockstore.service.TokenStoreHelper;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rx.Observable;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -93,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         final SharedPreferences preferences = this.getSharedPreferences(
                 BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
 
+        //TODO cut methot in single file for reg
         RetrofitService.getInstance()
                 .getApi()
 //                .postLogin(login, password)
@@ -105,8 +104,8 @@ public class LoginActivity extends AppCompatActivity {
                         if(statusCode == 200) {
                             Log.d("testing", "AccessToken/onResponse/response 200");
                             AccessToken token = response.body();
-                            TokenStoreHelper.saveStore(TokenStoreHelper.ACCESS_TOKEN, token.getAccessToken());
-                            TokenStoreHelper.saveStore(TokenStoreHelper.REFRESH_TOKEN, token.getRefreshToken());
+                            Utils.saveStore(Utils.ACCESS_TOKEN, token.getAccessToken());
+                            Utils.saveStore(Utils.REFRESH_TOKEN, token.getRefreshToken());
 
                             showProgress(false);
                             onSuccessfulAuth();

@@ -10,18 +10,22 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.BriefcaseAdapter;
+import com.paint.stockstore.data.BriefcaseDAO;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
 import com.paint.stockstore.model.InfoStock;
 import com.paint.stockstore.model.RefreshToken;
+import com.paint.stockstore.service.App;
 import com.paint.stockstore.service.RetrofitService;
-import com.paint.stockstore.service.TokenStoreHelper;
+import com.paint.stockstore.service.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,6 +39,9 @@ public class BriefcaseActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbar;
     private List<InfoStock> stock = new ArrayList<>();
     private TextView tvName;
+
+//    private DatabaseHelper database;
+    private BriefcaseDAO briefcaseDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +61,10 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_briefcase));
         collapsingToolbar = findViewById(R.id.collapsingToolbarLayout);
+        //TODO replace unicode        https://unicode-table.com/ru/20BD/
         collapsingToolbar.setTitle("0 р");
 
-        tvName = (TextView)findViewById(R.id.tv_name_item);
+        tvName = (TextView) findViewById(R.id.tv_name_item);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_briefcase);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
@@ -67,8 +75,11 @@ public class BriefcaseActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getInfo();
-//                setList();
+                if(Utils.isNetworkAvailable(getApplicationContext())){
+                    requestInfo(Utils.getToken());
+                } else {
+                    getInfo();
+                }
             }
         });
 
@@ -83,6 +94,9 @@ public class BriefcaseActivity extends AppCompatActivity {
         adapterBriefcase = new BriefcaseAdapter(stock);
         rvBriefcase.setAdapter(adapterBriefcase);
 
+//        database = App.getInstance().getDatabase();
+        briefcaseDao = App.getInstance().getDatabase().briefcaseDao();
+
         getInfo();
     }
 
@@ -93,12 +107,12 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
 
-    private void setList(AccountInfo accountInfo){
+    private void setList(List<InfoStock> listInfoStock){
 
         //TODO add test_inet on preloader
 //        adapterBriefcase = new BriefcaseAdapter(accountInfo.getStocks());
 
-        adapterBriefcase.swapList(accountInfo.getStock());
+        adapterBriefcase.swapList(listInfoStock);
         swipeRefreshLayout.setRefreshing(false);
 
 //        final Handler handler = new Handler();
@@ -113,12 +127,58 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void getInfo(){
-        String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
 //        accountInfo = AccountInfo.generateData();
-        requestInfo(token);
+        if(isResourceCache()){
+            List<InfoStock> listInfoStock = briefcaseDao.getData();
+            if (listInfoStock.size() != 0) {
+//            setInfo(data);
+                setList(listInfoStock);
+            } else {
+                showMessage("Отсутсвует подключение к интернету");
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        } else {
+            requestInfo(Utils.getToken());
+        }
 //        setInfo();
     }
 
+    private void showMessage(String text){
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
+    private boolean isResourceCache(){
+        return (isRelevanceCache() || !(Utils.isNetworkAvailable(getApplicationContext())));
+    }
+
+    private boolean isRelevanceCache(){
+        Long minToLife = TimeUnit.MINUTES.toMillis(5L);
+        Long diff = System.currentTimeMillis() - Utils.getTime();
+        return (diff - minToLife < 0);
+    }
+
+//    private String getTime(){
+//        String timestamp = Utils.getStore(Utils.TIMESTAMP);
+//        return timestamp.isEmpty() ? "0" : timestamp;
+//    }
+//
+//    private void setTime(){
+//        Utils.saveStore(Utils.TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+//    }
+//
+//    private String getToken(){
+//        return Utils.getStore(Utils.ACCESS_TOKEN);
+//    }
+
+    private void getNewToken(){
+        RefreshToken refreshToken = new RefreshToken(Utils.getStore(Utils.REFRESH_TOKEN));
+        requestToken(Utils.getToken(), refreshToken);
+    }
+
+//    private void saveNewToken(String token, String refreshToken){
+//        Utils.saveStore(Utils.ACCESS_TOKEN, token);
+//        Utils.saveStore(Utils.REFRESH_TOKEN, refreshToken);
+//    }
 
 
     private void requestInfo(String token){
@@ -134,13 +194,18 @@ public class BriefcaseActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         if(statusCode == 200) {
                             Log.d("testing", "getAccountInfo/onResponse/response 200");
-                            setInfo(response.body());
-                            setList(response.body());
 
+                            AccountInfo accountInfo = response.body();
+                            setInfo(response.body());
+                            setList(accountInfo.getStock());
+                            briefcaseDao.clear();
+                            briefcaseDao.insert(accountInfo.getStock());
+                            Utils.setTime();
                         } else if (statusCode == 403) {
                             getNewToken();
                         } else {
                             Log.d("testing", "getAccountInfo/onResponse/something wrong");
+                            showMessage(String.valueOf(response.code()));
                         }
                     }
 
@@ -148,11 +213,10 @@ public class BriefcaseActivity extends AppCompatActivity {
                     public void onFailure(Call<AccountInfo> call, Throwable t) {
                         swipeRefreshLayout.setRefreshing(false);
                         Log.d("testing", "getAccountInfo/onFailure/all wrong");
+                        showMessage(t.toString());
                     }
                 });
     }
-
-
 
 
     private void requestToken(String token, RefreshToken refreshToken){
@@ -168,42 +232,25 @@ public class BriefcaseActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         if(statusCode == 200) {
                             Log.d("testing", "refreshAccessToken/onResponse/response 200");
-                            AccessToken token = response.body();
-                            saveNewToken(token.getAccessToken(), token.getRefreshToken());
+//                            AccessToken token = response.body();
+//                            Utils.setToken(token.getAccessToken(), token.getRefreshToken());
+                            Utils.setToken(response.body());
 
                             getInfo();
-                        } else if (statusCode == 400) {
-                            startActivity(new Intent(
-                                    BriefcaseActivity.this, LoginActivity.class));
+                        } else if (statusCode == 401) {
+                            startActivity(new Intent(BriefcaseActivity.this, LoginActivity.class));
                         } else {
                             Log.d("testing", "refreshAccessToken/onResponse/something wrong");
+                            showMessage(String.valueOf(response.code()));
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AccessToken> call, Throwable t) {
                         Log.d("testing", "refreshAccessToken/onFailure/all wrong");
+                        showMessage(t.toString());
                     }
                 });
     }
-
-
-    private void getNewToken(){
-        String token = TokenStoreHelper.getStore(TokenStoreHelper.ACCESS_TOKEN);
-        String tokenRefresh = TokenStoreHelper.getStore(TokenStoreHelper.REFRESH_TOKEN);
-        RefreshToken refreshToken = new RefreshToken(tokenRefresh);
-        requestToken(token, refreshToken);
-    }
-
-    private void saveNewToken(String token, String refreshToken){
-        TokenStoreHelper.saveStore(TokenStoreHelper.ACCESS_TOKEN, token);
-        TokenStoreHelper.saveStore(TokenStoreHelper.REFRESH_TOKEN, refreshToken);
-    }
-
-
-
-
-
-
 
 }

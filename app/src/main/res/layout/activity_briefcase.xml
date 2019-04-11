@@ -25,7 +25,7 @@
                 android:layout_height="200dp"
                 android:layout_margin="10dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/logo"
+                android:contentDescription="TODO" android:src="@drawable/logo"
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar
@@ -47,7 +47,7 @@
                     android:layout_margin="5dp"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
-                    android:src="@drawable/baseline_account_circle_black_48dp"/>
+                    android:contentDescription="TODO" android:src="@drawable/baseline_account_circle_black_48dp"/>
 
                 <TextView
                     android:layout_margin="5dp"
@@ -65,7 +65,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:src="@drawable/baseline_history_black_48dp"
                 android:id="@+id/button_history"
-                android:onClick="clickImage"
+                android:contentDescription="TODO" android:onClick="clickImage"
                 android:layout_gravity="end"
                 app:layout_collapseMode="pin"/>
 

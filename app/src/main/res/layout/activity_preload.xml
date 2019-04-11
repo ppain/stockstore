@@ -7,7 +7,7 @@
     tools:context=".activity.PreloadActivity">
 
     <ImageView
-        android:src="@drawable/logo"
+        android:contentDescription="TODO" android:src="@drawable/logo"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

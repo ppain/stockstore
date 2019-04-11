@@ -8,7 +8,7 @@
 
     <ImageView
         android:id="@+id/im_iconUrl_item"
-        android:padding="8dp"
+        android:contentDescription="TODO" android:padding="8dp"
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:src="@drawable/baseline_add_shopping_cart_black_48dp" />
