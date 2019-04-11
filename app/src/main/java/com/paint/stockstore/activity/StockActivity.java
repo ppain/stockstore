@@ -39,14 +39,22 @@ public class StockActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_stocks, menu);
-        getSupportActionBar().setTitle("Акции");
+        getMenuInflater().inflate(R.menu.menu_stock, menu);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(getString(R.string.stock));
+        return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
         return true;
     }
 
     void init() {
 
         Toolbar toolbar = findViewById(R.id.toolbar_stock);
+        //toolbar.setNavigationIcon(android.R.id.home);
         setSupportActionBar(toolbar);
 
         RecyclerView rvStocks = (RecyclerView) findViewById(R.id.list_stock);
@@ -67,7 +75,7 @@ public class StockActivity extends AppCompatActivity {
         adapterStock = new StockAdapter(stock);
         rvStocks.setAdapter(adapterStock);
 
-        requestStock("Sber", String.valueOf(10), String.valueOf(1));
+        requestStock("Rai", 10, 1);
     }
 
 
@@ -77,7 +85,7 @@ public class StockActivity extends AppCompatActivity {
     }
 
 
-    private void requestStock(String search, String count, String itemId){
+    private void requestStock(String search, int count, int itemId){
 
         RetrofitService.getInstance()
                 .getApi()

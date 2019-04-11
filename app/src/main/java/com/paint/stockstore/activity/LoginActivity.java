@@ -28,7 +28,7 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
+    private final String PATTERN_LOGIN = getResources().getString(R.string.pattern);
 
     private EditText textLogin, textPassword;
     private Button buttonLogin;

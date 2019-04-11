@@ -48,8 +48,8 @@ public interface StockApi {
     @GET("/api/stocks")
     Call<Stock> getAccountInfoStockParam(
             @Query("search") String search,
-            @Query("count") String count,
-            @Query("itemId") String itemId);
+            @Query("count") int count,
+            @Query("itemId") int itemId);
 
     @GET("/api/stocks")
     Call<Stock> getAccountInfoStock();

@@ -62,7 +62,7 @@ public class BriefcaseActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_briefcase));
         collapsingToolbar = findViewById(R.id.collapsingToolbarLayout);
         //TODO replace unicode        https://unicode-table.com/ru/20BD/
-        collapsingToolbar.setTitle("0 р");
+        collapsingToolbar.setTitle(getString(R.string.default_balance) + getString(R.string.rub));
 
         tvName = (TextView) findViewById(R.id.tv_name_item);
 
@@ -71,6 +71,8 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         RecyclerView rvBriefcase = (RecyclerView) findViewById(R.id.list_briefcase);
         rvBriefcase.setLayoutManager(new LinearLayoutManager(this));
+        adapterBriefcase = new BriefcaseAdapter(stock);
+        rvBriefcase.setAdapter(adapterBriefcase);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -78,7 +80,8 @@ public class BriefcaseActivity extends AppCompatActivity {
                 if(Utils.isNetworkAvailable(getApplicationContext())){
                     requestInfo(Utils.getToken());
                 } else {
-                    getInfo();
+                    showMessage("Отсутсвует подключение к интернету");
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -91,10 +94,6 @@ public class BriefcaseActivity extends AppCompatActivity {
                 BriefcaseActivity.this, StockActivity.class
         )));
 
-        adapterBriefcase = new BriefcaseAdapter(stock);
-        rvBriefcase.setAdapter(adapterBriefcase);
-
-//        database = App.getInstance().getDatabase();
         briefcaseDao = App.getInstance().getDatabase().briefcaseDao();
 
         getInfo();
@@ -102,14 +101,12 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void setInfo(AccountInfo accountInfo){
-        collapsingToolbar.setTitle(String.valueOf(accountInfo.getBalance()) + " р");
+        collapsingToolbar.setTitle(String.valueOf(accountInfo.getBalance()) + getString(R.string.rub));
         tvName.setText(accountInfo.getName());
     }
 
 
     private void setList(List<InfoStock> listInfoStock){
-
-        //TODO add test_inet on preloader
 //        adapterBriefcase = new BriefcaseAdapter(accountInfo.getStocks());
 
         adapterBriefcase.swapList(listInfoStock);
@@ -128,28 +125,24 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     private void getInfo(){
 //        accountInfo = AccountInfo.generateData();
-        if(isResourceCache()){
-            List<InfoStock> listInfoStock = briefcaseDao.getData();
-            if (listInfoStock.size() != 0) {
-//            setInfo(data);
-                setList(listInfoStock);
-            } else {
-                showMessage("Отсутсвует подключение к интернету");
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        } else {
+        if(isRelevanceCache() && briefcaseDao.getData().size() > 0){
+            setList(briefcaseDao.getData());
+
+        } else if (Utils.isNetworkAvailable(getApplicationContext())) {
             requestInfo(Utils.getToken());
+
+        } else {
+            showMessage("Отсутсвует подключение к интернету");
+            swipeRefreshLayout.setRefreshing(false);
         }
 //        setInfo();
     }
+
 
     private void showMessage(String text){
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
-    private boolean isResourceCache(){
-        return (isRelevanceCache() || !(Utils.isNetworkAvailable(getApplicationContext())));
-    }
 
     private boolean isRelevanceCache(){
         Long minToLife = TimeUnit.MINUTES.toMillis(5L);
@@ -157,28 +150,10 @@ public class BriefcaseActivity extends AppCompatActivity {
         return (diff - minToLife < 0);
     }
 
-//    private String getTime(){
-//        String timestamp = Utils.getStore(Utils.TIMESTAMP);
-//        return timestamp.isEmpty() ? "0" : timestamp;
-//    }
-//
-//    private void setTime(){
-//        Utils.saveStore(Utils.TIMESTAMP, String.valueOf(System.currentTimeMillis()));
-//    }
-//
-//    private String getToken(){
-//        return Utils.getStore(Utils.ACCESS_TOKEN);
-//    }
 
     private void getNewToken(){
-        RefreshToken refreshToken = new RefreshToken(Utils.getStore(Utils.REFRESH_TOKEN));
-        requestToken(Utils.getToken(), refreshToken);
+        requestToken(Utils.getToken(), new RefreshToken(Utils.getRefreshToken()));
     }
-
-//    private void saveNewToken(String token, String refreshToken){
-//        Utils.saveStore(Utils.ACCESS_TOKEN, token);
-//        Utils.saveStore(Utils.REFRESH_TOKEN, refreshToken);
-//    }
 
 
     private void requestInfo(String token){
@@ -252,5 +227,4 @@ public class BriefcaseActivity extends AppCompatActivity {
                     }
                 });
     }
-
 }

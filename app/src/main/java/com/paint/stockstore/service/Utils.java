@@ -56,7 +56,7 @@ public class Utils {
     }
 
     public static String getRefreshToken(){
-        return getStore(ACCESS_TOKEN);
+        return getStore(REFRESH_TOKEN);
     }
 
     public static void setToken(AccessToken token){

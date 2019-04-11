@@ -4,5 +4,11 @@
     <string name="password">Пароль</string>
     <string name="sigin">Войти</string>
     <string name="signup">Создать аккаунт</string>
+    <string name="pattern">^[a-z|A-Z|\d|_]{3,100}$</string>
     <string name="hint_search">Поиск акций</string>
+    <string name="default_balance">0</string>
+    <string name="rub">\u20BD</string>
+    <string name="part_price"> р</string>
+    <string name="part_count"> шт</string>
+    <string name="stock">Акции</string>
 </resources>

@@ -17,7 +17,7 @@ import java.util.List;
 
 public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.BriefcaseViewHolder>{
 
-    List<InfoStock> data = new ArrayList<>();
+    private List<InfoStock> data = new ArrayList<>();
 
     public BriefcaseAdapter(List<InfoStock> data) {
         this.data.addAll(data);
@@ -39,14 +39,16 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
             nameItem = (TextView) itemView.findViewById(R.id.tv_name_item);
             priceItem = (TextView) itemView.findViewById(R.id.tv_price_item);
             priceDeltaItem = (TextView) itemView.findViewById(R.id.tv_priceDelta_item);
-            countItem = (TextView) itemView.findViewById(R.id.tv_count_item);
+            countItem = (TextView) itemView.findViewById(R.id.tv_count_code_item);
+
+            iconUrlItem.setImageResource(R.drawable.baseline_business_center_black_48dp);
         }
     }
 
     @NonNull
     @Override
     public BriefcaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_briefcase, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stock, parent, false);
         return new BriefcaseViewHolder(view);
     }
 
@@ -54,12 +56,18 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
     public void onBindViewHolder(@NonNull BriefcaseViewHolder holder, int position) {
         InfoStock model = data.get(position);
 
+        //String price = String.valueOf(model.getPrice()) + getString(R.string.part_price);
+        String price = String.valueOf(model.getPrice()) + "р";
+        //String count = String.valueOf(model.getCount()) + R.string.part_count;
+        String count = String.valueOf(model.getCount()) + "шт";
+
         //TODO create color for icon on name_hash
         //holder.iconUrlItem.setImageIcon();
         holder.nameItem.setText(model.getName());
-        holder.priceItem.setText(String.valueOf(model.getPrice()) + " руб");
+
+        holder.priceItem.setText(price);
         holder.priceDeltaItem.setText(String.valueOf(model.getPriceDelta()));
-        holder.countItem.setText(String.valueOf(model.getCount()) + "шт");
+        holder.countItem.setText(count);
     }
 
     @Override

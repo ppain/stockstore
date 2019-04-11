@@ -16,7 +16,7 @@ import java.util.List;
 
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder>{
 
-        List<InfoStock> data = new ArrayList<>();
+        private List<InfoStock> data = new ArrayList<>();
 
         public StockAdapter(List<InfoStock> data) {
             this.data.addAll(data);
@@ -38,7 +38,9 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
                 nameItem = (TextView) itemView.findViewById(R.id.tv_name_item);
                 priceItem = (TextView) itemView.findViewById(R.id.tv_price_item);
                 priceDeltaItem = (TextView) itemView.findViewById(R.id.tv_priceDelta_item);
-                codeItem = (TextView) itemView.findViewById(R.id.tv_code_item);
+                codeItem = (TextView) itemView.findViewById(R.id.tv_count_code_item);
+
+                iconUrlItem.setImageResource(R.drawable.baseline_add_shopping_cart_black_48dp);
             }
         }
 
@@ -53,10 +55,13 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
         public void onBindViewHolder(@NonNull StockAdapter.StockViewHolder holder, int position) {
             InfoStock model = data.get(position);
 
+            //String price = String.valueOf(model.getPrice()) + getString(R.string.part_price);
+            String price = String.valueOf(model.getPrice()) + "р";
+
             //TODO create color for icon on name_hash
             //holder.iconUrlItem.setImageIcon();
             holder.nameItem.setText(model.getName());
-            holder.priceItem.setText(String.valueOf(model.getPrice()) + " руб");
+            holder.priceItem.setText(price);
             holder.priceDeltaItem.setText(String.valueOf(model.getPriceDelta()));
             holder.codeItem.setText(String.valueOf(model.getCode()));
         }
