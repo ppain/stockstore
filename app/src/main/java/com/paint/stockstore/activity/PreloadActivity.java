@@ -38,6 +38,7 @@ public class PreloadActivity extends AppCompatActivity {
 
 //        startActivity(new Intent(PreloadActivity.this, StockActivity.class));
 //        startActivity(new Intent(PreloadActivity.this, BriefcaseActivity.class));
+//        startActivity(new Intent(PreloadActivity.this, LoginActivity.class));
 
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }

@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.paint.stockstore.BuildConfig;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.AccessToken;
@@ -22,17 +23,24 @@ import com.paint.stockstore.model.User;
 import com.paint.stockstore.service.Utils;
 import com.paint.stockstore.service.RetrofitService;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private final String PATTERN_LOGIN = getResources().getString(R.string.pattern);
+//    private final String PATTERN_LOGIN = getResources().getString(R.string.pattern);
+    private final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
 
     private EditText textLogin, textPassword;
     private Button buttonLogin;
     private ProgressBar progressBar;
+
+    Observable<Boolean> observable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +59,10 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         showProgress(false);
-        buttonLogin.setText(R.string.sigin);
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
 
+        buttonLogin.setText(R.string.sigin);
+
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signin();
@@ -70,31 +79,61 @@ public class LoginActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+
+
+        Observable<String> nameObservable = RxTextView.textChanges(textLogin).skip(1).map(new Function<CharSequence, String>() {
+            @Override
+            public String apply(CharSequence charSequence) throws Exception {
+                return charSequence.toString();
+            }
+        });
+        Observable<String> passwordObservable = RxTextView.textChanges(textPassword).skip(1).map(new Function<CharSequence, String>() {
+            @Override
+            public String apply(CharSequence charSequence) throws Exception {
+                return charSequence.toString();
+            }
+        });
+
+        observable = Observable.combineLatest(nameObservable, passwordObservable, new BiFunction<String, String, Boolean>() {
+            @Override
+            public Boolean apply(String login, String password) throws Exception {
+                return validate(login, password);
+            }
+        });
+
+        observable.subscribe(new DisposableObserver<Boolean>() {
+            @Override
+            public void onNext(Boolean enable) {
+                setEnableButtonLogin(enable);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
+
+
+    private void setEnableButtonLogin(boolean enable) {
+        buttonLogin.setEnabled(enable);
+    }
+
 
     public void signin() {
 
         showProgress(true);
 
-        if (!validate()) {
-            onLoginFailed();
-            return;
-        }
-
-//        buttonLogin.setEnabled(false);
-
         User user = new User(textLogin.getText().toString(), textPassword.getText().toString());
-
-        String login = textLogin.getText().toString();
-        String password = textPassword.getText().toString();
-
-        final SharedPreferences preferences = this.getSharedPreferences(
-                BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
 
         //TODO cut methot in single file for reg
         RetrofitService.getInstance()
                 .getApi()
-//                .postLogin(login, password)
                 .postLogin(user)
                 .enqueue(new Callback<AccessToken>() {
                     @Override
@@ -103,16 +142,14 @@ public class LoginActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         if(statusCode == 200) {
                             Log.d("testing", "AccessToken/onResponse/response 200");
-                            AccessToken token = response.body();
-                            Utils.saveStore(Utils.ACCESS_TOKEN, token.getAccessToken());
-                            Utils.saveStore(Utils.REFRESH_TOKEN, token.getRefreshToken());
+                            Utils.setToken(response.body());
 
                             showProgress(false);
                             onSuccessfulAuth();
                         } else {
                             showProgress(false);
                             Log.d("testing", "AccessToken/onResponse/something wrong");
-                            showError(response.errorBody().toString());
+                            showMessage(response.errorBody().toString());
                         }
                     }
 
@@ -120,29 +157,24 @@ public class LoginActivity extends AppCompatActivity {
                     public void onFailure(Call<AccessToken> call, Throwable t) {
                         showProgress(false);
                         Log.d("testing", "AccessToken/onFailure/all wrong");
-                        showError(t.toString());
+                        showMessage(t.toString());
                     }
                 });
     }
 
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Ошибка регистрации", Toast.LENGTH_LONG).show();
-
-//        buttonLogin.setEnabled(true);
+    private void showMessage(@NonNull String text){
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
 
     //TODO replace this code
-    public boolean validate() {
+    public boolean validate(String login, String password) {
         boolean valid = true;
-
-        String login = textLogin.getText().toString();
-        String password = textPassword.getText().toString();
 
         if (login.matches(PATTERN_LOGIN)) {
             textLogin.setError(null);
         } else {
-            textLogin.setError("Корректный логин - " + PATTERN_LOGIN);
+            textLogin.setError("от 3 [a-z|A-Z|\\d]");
             valid = false;
         }
 
@@ -156,10 +188,6 @@ public class LoginActivity extends AppCompatActivity {
         return valid;
     }
 
-
-    private void showError(@NonNull String error) {
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
-    }
 
     private void onSuccessfulAuth() {
         Intent intent = new Intent(LoginActivity.this, BriefcaseActivity.class);

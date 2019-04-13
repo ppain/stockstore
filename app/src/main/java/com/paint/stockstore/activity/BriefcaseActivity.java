@@ -2,6 +2,7 @@ package com.paint.stockstore.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -139,7 +140,7 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
 
-    private void showMessage(String text){
+    private void showMessage(@NonNull String text){
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
@@ -226,5 +227,10 @@ public class BriefcaseActivity extends AppCompatActivity {
                         showMessage(t.toString());
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this,"test",Toast.LENGTH_LONG).show();
     }
 }

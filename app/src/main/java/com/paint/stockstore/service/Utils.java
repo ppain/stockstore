@@ -64,15 +64,4 @@ public class Utils {
         saveStore(REFRESH_TOKEN, token.getRefreshToken());
     }
 
-
-
-//    public static String dateToString(Date date, String pattern)
-//            throws Exception {
-//        return new SimpleDateFormat(pattern).format(date);
-//    }
-//
-//    public static Date stringToDate(String dateStr, String pattern)
-//            throws Exception {
-//        return new SimpleDateFormat(pattern).parse(dateStr);
-//    }
 }
