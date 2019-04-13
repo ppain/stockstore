@@ -208,8 +208,6 @@ public class BriefcaseActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         if(statusCode == 200) {
                             Log.d("testing", "refreshAccessToken/onResponse/response 200");
-//                            AccessToken token = response.body();
-//                            Utils.setToken(token.getAccessToken(), token.getRefreshToken());
                             Utils.setToken(response.body());
 
                             getInfo();
@@ -227,10 +225,5 @@ public class BriefcaseActivity extends AppCompatActivity {
                         showMessage(t.toString());
                     }
                 });
-    }
-
-    @Override
-    public void onBackPressed() {
-        Toast.makeText(this,"test",Toast.LENGTH_LONG).show();
     }
 }

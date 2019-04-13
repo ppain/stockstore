@@ -1,5 +1,6 @@
 package com.paint.stockstore.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ClipData;
@@ -14,6 +15,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView;
 import com.paint.stockstore.R;
@@ -30,6 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -47,7 +52,6 @@ public class StockActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<InfoStock> stock = new ArrayList<>();
     private StockAdapter adapterStock;
-    String s;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,7 @@ public class StockActivity extends AppCompatActivity {
         init();
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_stock, menu);
@@ -69,57 +74,26 @@ public class StockActivity extends AppCompatActivity {
         searchView.setQueryHint("...");
 
 
-//        RxSearchView.queryTextChanges(searchView)
-//                .debounce(300, TimeUnit.MILLISECONDS)
-//                .map(CharSequence::toString)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Subscriber() {
-//                    @Override
-//                    public void onSubscribe(Subscription s) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(String result) {
-//                        s = result;
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable t) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
+        RxSearchObservable.fromView(searchView)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .filter(new Predicate<String>() {
+                    @Override
+                    public boolean test(String text) throws Exception {
+                        return text.length() < 2 ? false : true;
+                    }
+                })
+                .distinctUntilChanged()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String result) throws Exception {
+                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+                        requestStock(result, 10, 1);
+                    }
+                });
 
-
-//        RxSearchView.queryTextChanges(searchView)
-//                .debounce(300, TimeUnit.MILLISECONDS)
-////                .filter((Predicate<String>) text -> {
-////                    if (text.isEmpty()) {
-////                        return false;
-////                    } else {
-////                        return true;
-////                    }
-////                })
-//                .distinctUntilChanged()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-////                .subscribe(result -> requestStock((String) result, 10, 1));
-//                .subscribe(new Consumer<String>() {
-//                    @Override
-//                    public void accept(String result) throws Exception {
-//                        s = result;
-//                    }
-//                });
-
-
-
-        return true;
-//        return super.onCreateOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -154,36 +128,7 @@ public class StockActivity extends AppCompatActivity {
         adapterStock = new StockAdapter(stock);
         rvStocks.setAdapter(adapterStock);
 
-        requestStock("Rai", 10, 1);
-
-
-//        RxSearchObservable.fromView(searchView)
-//                .debounce(300, TimeUnit.MILLISECONDS)
-//                .filter(new Predicate<String>() {
-//                    @Override
-//                    public boolean test(String text) throws Exception {
-//                        if (text.isEmpty()) {
-//                            return false;
-//                        } else {
-//                            return true;
-//                        }
-//                    }
-//                })
-//                .distinctUntilChanged()
-//                .switchMap(new Function<String, ObservableSource<String>>() {
-//                    @Override
-//                    public ObservableSource<String> apply(String query) throws Exception {
-//                        return dataFromNetwork(query);
-//                    }
-//                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Consumer<String>() {
-//                    @Override
-//                    public void accept(String result) throws Exception {
-//                        textViewResult.setText(result);
-//                    }
-//                });
+        requestStock();
     }
 
 
