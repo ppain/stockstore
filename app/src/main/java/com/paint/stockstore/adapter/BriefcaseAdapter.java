@@ -73,9 +73,9 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
         String ruble = context.getString(R.string.ruble);
         String percent = context.getString(R.string.percent);
         float hundred = 100f;
-        float fPriceDelta = model.getPriceDelta();
+        float fPriceDelta = Math.round(model.getPriceDelta() * hundred) / hundred;
 
-        String price = String.valueOf(model.getPrice()) + rub;
+        String price = String.valueOf(Math.round(model.getPrice() * hundred) / hundred) + rub;
         String count = String.valueOf(model.getCount()) + context.getString(R.string.amount);
 
         if (fPriceDelta < 0) {
