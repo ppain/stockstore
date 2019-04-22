@@ -144,7 +144,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void setInfo(AccountInfo accountInfo){
-        collapsingToolbar.setTitle(String.valueOf(accountInfo.getBalance()) + getString(R.string.rub));
+        collapsingToolbar.setTitle(String.valueOf(Math.round(accountInfo.getBalance() * 100f) / 100f) + getString(R.string.rub));
         tvName.setText(accountInfo.getName());
     }
 
@@ -154,15 +154,6 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         adapterBriefcase.swapList(listInfoStock);
         swipeRefreshLayout.setRefreshing(false);
-
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                adapterBriefcase.swapList(accountInfo.getStock());
-//                swipeRefreshLayout.setRefreshing(false);
-//            }
-//        }, 1000);
     }
 
 

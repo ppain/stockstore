@@ -37,6 +37,7 @@ public class RetrofitService {
 
     private RetrofitService() {
 
+        //TODO delete logs
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();

@@ -19,5 +19,7 @@
     <string name="stock">Акции</string>
     <string name="buy">Купить</string>
     <string name="sell">Продать</string>
+    <string name="sell_">Продать</string>
     <string name="dots">…</string>
+    <string name="dot">\u25CF</string>
 </resources>

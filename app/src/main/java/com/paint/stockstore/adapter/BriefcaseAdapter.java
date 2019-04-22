@@ -11,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.paint.stockstore.R;
+import com.paint.stockstore.activity.BriefcaseActivity;
 import com.paint.stockstore.model.InfoStock;
 
 import java.util.ArrayList;
@@ -33,15 +35,15 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
 
     public class BriefcaseViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView iconUrlItem;
-        public TextView nameItem;
-        public TextView priceItem;
-        public TextView priceDeltaItem;
-        public TextView countItem;
+        private ImageView iconUrlItem;
+        private TextView nameItem;
+        private TextView priceItem;
+        private TextView priceDeltaItem;
+        private TextView countItem;
 
         LinearLayout parentLayout;
 
-        public BriefcaseViewHolder(View itemView) {
+        private BriefcaseViewHolder(View itemView) {
             super(itemView);
 
             iconUrlItem = (ImageView) itemView.findViewById(R.id.im_iconUrl_item);
@@ -69,24 +71,33 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
 
         String priceDelta;
         float percentDelta;
+
         String rub = context.getString(R.string.rub);
         String ruble = context.getString(R.string.ruble);
         String percent = context.getString(R.string.percent);
+        String amount = context.getString(R.string.amount);
         float hundred = 100f;
+        int colorRed = ContextCompat.getColor(context, R.color.colorRed);
+        int colorGreen = ContextCompat.getColor(context, R.color.colorGreen);
+
+
         float fPriceDelta = Math.round(model.getPriceDelta() * hundred) / hundred;
 
         String price = String.valueOf(Math.round(model.getPrice() * hundred) / hundred) + rub;
-        String count = String.valueOf(model.getCount()) + context.getString(R.string.amount);
+        String count = String.valueOf(model.getCount()) + amount;
+
 
         if (fPriceDelta < 0) {
-            holder.priceDeltaItem.setTextColor(ContextCompat.getColor(context, R.color.colorRed));
+            holder.priceDeltaItem.setTextColor(colorRed);
             percentDelta = - fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
             priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred  + percent;
         } else {
-            holder.priceDeltaItem.setTextColor(ContextCompat.getColor(context, R.color.colorGreen));
+            holder.priceDeltaItem.setTextColor(colorGreen);
             percentDelta = fPriceDelta * hundred / model.getPrice();
             priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Math.round(percentDelta * hundred) / hundred + percent;
         }
+
+        Glide.with(context).load(model.getIconUrl()).into(holder.iconUrlItem);
 
         //TODO create color for icon on name_hash
         //holder.iconUrlItem.setImageIcon();
@@ -120,5 +131,4 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
             notifyDataSetChanged();
         }
     }
-
 }

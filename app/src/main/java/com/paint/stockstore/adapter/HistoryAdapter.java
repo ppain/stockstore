@@ -64,10 +64,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     public void onBindViewHolder(@NonNull HistoryAdapter.HistoryViewHolder holder, int position) {
         TransactionHistoryRecord model = data.get(position);
 
-        String totalPrice = String.valueOf(model.getTotalPrice()) + "р";
-        String codeAmount = model.getStock().getCode() + "/" + String.valueOf(model.getAmount());
+        String totalPrice = String.valueOf(model.getTotalPrice()) + context.getString(R.string.rub);;
+        String codeAmount = model.getStock().getCode() + context.getString(R.string.dot) + String.valueOf(model.getAmount());
 
-        if(model.getType() == "sell") {
+        if(model.getType() == context.getString(R.string.sell_)) {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorRed));
         } else {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorGreen));

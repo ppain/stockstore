@@ -2,6 +2,7 @@ package com.paint.stockstore.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,14 +66,35 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
     public void onBindViewHolder(@NonNull StockAdapter.StockViewHolder holder, int position) {
         InfoStock model = data.get(position);
 
-        //String price = String.valueOf(model.getPrice()) + getString(R.string.part_price);
-        String price = String.valueOf(model.getPrice()) + "р";
+        String priceDelta;
+        float percentDelta;
+
+        String rub = context.getString(R.string.rub);
+        String ruble = context.getString(R.string.ruble);
+        String percent = context.getString(R.string.percent);
+        float hundred = 100f;
+        int colorRed = ContextCompat.getColor(context, R.color.colorRed);
+        int colorGreen = ContextCompat.getColor(context, R.color.colorGreen);
+
+        float fPriceDelta = Math.round(model.getPriceDelta() * hundred) / hundred;
+
+        String price = String.valueOf(Math.round(model.getPrice() * hundred) / hundred) + rub;
+
+        if (fPriceDelta < 0) {
+            holder.priceDeltaItem.setTextColor(colorRed);
+            percentDelta = - fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
+            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred  + percent;
+        } else {
+            holder.priceDeltaItem.setTextColor(colorGreen);
+            percentDelta = fPriceDelta * hundred / model.getPrice();
+            priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Math.round(percentDelta * hundred) / hundred + percent;
+        }
 
         //TODO create color for icon on name_hash
         //holder.iconUrlItem.setImageIcon();
         holder.nameItem.setText(model.getName());
         holder.priceItem.setText(price);
-        holder.priceDeltaItem.setText(String.valueOf(model.getPriceDelta()));
+        holder.priceDeltaItem.setText(priceDelta);
         holder.codeItem.setText(String.valueOf(model.getCode()));
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
