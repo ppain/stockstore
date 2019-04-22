@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.InfoStock;
 import com.paint.stockstore.model.TransactionHistoryRecord;
@@ -72,8 +74,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         } else {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorGreen));
         }
-        //TODO create color for icon on name_hash
-        //holder.iconUrlItem.setImageIcon();
+
+        Glide.with(holder.itemView.getContext())
+                .load(model.getStock().getIconUrl())
+                .thumbnail(0.5f)
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .placeholder(R.drawable.baseline_add_shopping_cart_black_48dp)
+                .into(holder.iconUrlItem);
+
         holder.nameItem.setText(model.getStock().getName());
         holder.priceItem.setText(totalPrice);
         holder.codeCountItem.setText(codeAmount);

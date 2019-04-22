@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paint.stockstore.R;
 import com.paint.stockstore.activity.BriefcaseActivity;
 import com.paint.stockstore.model.InfoStock;
@@ -23,7 +24,7 @@ import java.util.List;
 public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.BriefcaseViewHolder>{
 
     private List<InfoStock> data = new ArrayList<>();
-    public SellBuyAdapterClickListener sellAdapterClickListener;
+    private SellBuyAdapterClickListener sellAdapterClickListener;
     private Context context;
 
     public BriefcaseAdapter(List<InfoStock> data, Context context, SellBuyAdapterClickListener sellAdapterClickListener) {
@@ -53,8 +54,6 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
             countItem = (TextView) itemView.findViewById(R.id.tv_count_code_item);
 
             parentLayout = itemView.findViewById(R.id.item_stock);
-
-            iconUrlItem.setImageResource(R.drawable.baseline_business_center_black_48dp);
         }
     }
 
@@ -97,10 +96,14 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
             priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Math.round(percentDelta * hundred) / hundred + percent;
         }
 
-        Glide.with(context).load(model.getIconUrl()).into(holder.iconUrlItem);
+        Glide.with(holder.itemView.getContext())
+                .load(model.getIconUrl())
+                .thumbnail(0.5f)
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .placeholder(R.drawable.baseline_business_center_black_48dp)
+                .into(holder.iconUrlItem);
 
-        //TODO create color for icon on name_hash
-        //holder.iconUrlItem.setImageIcon();
         holder.nameItem.setText(model.getName());
         holder.priceItem.setText(price);
         holder.priceDeltaItem.setText(priceDelta);

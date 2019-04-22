@@ -22,4 +22,5 @@
     <string name="sell_">Продать</string>
     <string name="dots">…</string>
     <string name="dot">\u25CF</string>
+    <string name="enter_amount">Введите количество</string>
 </resources>

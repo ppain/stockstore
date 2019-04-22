@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.InfoStock;
 
@@ -50,8 +52,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
             codeItem = (TextView) itemView.findViewById(R.id.tv_count_code_item);
 
             parentLayout = itemView.findViewById(R.id.item_stock);
-
-            iconUrlItem.setImageResource(R.drawable.baseline_add_shopping_cart_black_48dp);
         }
     }
 
@@ -90,8 +90,14 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
             priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Math.round(percentDelta * hundred) / hundred + percent;
         }
 
-        //TODO create color for icon on name_hash
-        //holder.iconUrlItem.setImageIcon();
+        Glide.with(holder.itemView.getContext())
+                .load(model.getIconUrl())
+                .thumbnail(0.5f)
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
+                .placeholder(R.drawable.baseline_add_shopping_cart_black_48dp)
+                .into(holder.iconUrlItem);
+
         holder.nameItem.setText(model.getName());
         holder.priceItem.setText(price);
         holder.priceDeltaItem.setText(priceDelta);

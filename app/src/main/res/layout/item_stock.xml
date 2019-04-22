@@ -10,8 +10,7 @@
         android:id="@+id/im_iconUrl_item"
         android:padding="8dp"
         android:layout_width="64dp"
-        android:layout_height="match_parent"
-        android:src="@drawable/baseline_add_shopping_cart_black_48dp" />
+        android:layout_height="match_parent"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -24,16 +23,14 @@
             android:id="@+id/tv_name_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1111"
             android:textColor="@color/colorBlack"
-            android:textSize="23sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tv_count_code_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2222"
-            android:textSize="15sp" />
+            android:textSize="13sp" />
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -48,14 +45,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorBlack"
-            android:text="3333"
             android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tv_priceDelta_date_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4444"
-            android:textSize="15sp" />
+            android:textSize="13sp" />
     </LinearLayout>
 </LinearLayout>

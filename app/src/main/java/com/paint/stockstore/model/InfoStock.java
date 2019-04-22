@@ -2,6 +2,7 @@ package com.paint.stockstore.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -15,7 +16,7 @@ public class InfoStock {
     @SerializedName("id")
     private Long id;
 
-
+    @Ignore
     @SerializedName("code")
     private String code;
 
@@ -54,7 +55,7 @@ public class InfoStock {
         return id;
     }
 
-    public void setId(@NonNull Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -70,7 +71,7 @@ public class InfoStock {
         return name;
     }
 
-    public void setName(@NonNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
