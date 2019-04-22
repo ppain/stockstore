@@ -1,11 +1,14 @@
 package com.paint.stockstore.adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.paint.stockstore.R;
@@ -18,9 +21,13 @@ import java.util.List;
 public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.BriefcaseViewHolder>{
 
     private List<InfoStock> data = new ArrayList<>();
+    public SellBuyAdapterClickListener sellAdapterClickListener;
+    private Context context;
 
-    public BriefcaseAdapter(List<InfoStock> data) {
+    public BriefcaseAdapter(List<InfoStock> data, Context context, SellBuyAdapterClickListener sellAdapterClickListener) {
         this.data.addAll(data);
+        this.context = context;
+        this.sellAdapterClickListener = sellAdapterClickListener;
     }
 
 
@@ -32,14 +39,18 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
         public TextView priceDeltaItem;
         public TextView countItem;
 
+        LinearLayout parentLayout;
+
         public BriefcaseViewHolder(View itemView) {
             super(itemView);
 
             iconUrlItem = (ImageView) itemView.findViewById(R.id.im_iconUrl_item);
             nameItem = (TextView) itemView.findViewById(R.id.tv_name_item);
             priceItem = (TextView) itemView.findViewById(R.id.tv_price_item);
-            priceDeltaItem = (TextView) itemView.findViewById(R.id.tv_priceDelta_item);
+            priceDeltaItem = (TextView) itemView.findViewById(R.id.tv_priceDelta_date_item);
             countItem = (TextView) itemView.findViewById(R.id.tv_count_code_item);
+
+            parentLayout = itemView.findViewById(R.id.item_stock);
 
             iconUrlItem.setImageResource(R.drawable.baseline_business_center_black_48dp);
         }
@@ -56,18 +67,41 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
     public void onBindViewHolder(@NonNull BriefcaseViewHolder holder, int position) {
         InfoStock model = data.get(position);
 
-        //String price = String.valueOf(model.getPrice()) + getString(R.string.part_price);
-        String price = String.valueOf(model.getPrice()) + "р";
-        //String count = String.valueOf(model.getCount()) + R.string.part_count;
-        String count = String.valueOf(model.getCount()) + "шт";
+        String priceDelta;
+        float percentDelta;
+        String rub = context.getString(R.string.rub);
+        String ruble = context.getString(R.string.ruble);
+        String percent = context.getString(R.string.percent);
+        float hundred = 100f;
+        float fPriceDelta = model.getPriceDelta();
+
+        String price = String.valueOf(model.getPrice()) + rub;
+        String count = String.valueOf(model.getCount()) + context.getString(R.string.amount);
+
+        if (fPriceDelta < 0) {
+            holder.priceDeltaItem.setTextColor(ContextCompat.getColor(context, R.color.colorRed));
+            percentDelta = - fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
+            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred  + percent;
+        } else {
+            holder.priceDeltaItem.setTextColor(ContextCompat.getColor(context, R.color.colorGreen));
+            percentDelta = fPriceDelta * hundred / model.getPrice();
+            priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Math.round(percentDelta * hundred) / hundred + percent;
+        }
 
         //TODO create color for icon on name_hash
         //holder.iconUrlItem.setImageIcon();
         holder.nameItem.setText(model.getName());
-
         holder.priceItem.setText(price);
-        holder.priceDeltaItem.setText(String.valueOf(model.getPriceDelta()));
+        holder.priceDeltaItem.setText(priceDelta);
         holder.countItem.setText(count);
+
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sellAdapterClickListener.onItemClicked(String.valueOf(model.getId()),
+                        model.getName(), model.getCount());
+            }
+        });
     }
 
     @Override

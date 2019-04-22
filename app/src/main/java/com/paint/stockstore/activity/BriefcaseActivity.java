@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.BriefcaseAdapter;
+import com.paint.stockstore.adapter.BuyAdapterClickListener;
+import com.paint.stockstore.adapter.SellBuyAdapterClickListener;
 import com.paint.stockstore.data.BriefcaseDAO;
+import com.paint.stockstore.fragment.SellStockFragment;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
 import com.paint.stockstore.model.InfoStock;
@@ -57,6 +60,12 @@ public class BriefcaseActivity extends AppCompatActivity {
         init();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        forcedUpdate();
+    }
+
 
     void init() {
 
@@ -72,23 +81,33 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         RecyclerView rvBriefcase = (RecyclerView) findViewById(R.id.list_briefcase);
         rvBriefcase.setLayoutManager(new LinearLayoutManager(this));
-        adapterBriefcase = new BriefcaseAdapter(stock);
+        adapterBriefcase = new BriefcaseAdapter(stock, BriefcaseActivity.this, new SellBuyAdapterClickListener() {
+            @Override
+            public void onItemClicked(String stockId, String name, int count) {
+                showSellStockFragment(stockId, name, count);
+            }
+        });
         rvBriefcase.setAdapter(adapterBriefcase);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(Utils.isNetworkAvailable(getApplicationContext())){
-                    requestInfo(Utils.getToken());
-                } else {
-                    showMessage("Отсутсвует подключение к интернету");
-                    swipeRefreshLayout.setRefreshing(false);
-                }
+                forcedUpdate();
+//                if(Utils.isNetworkAvailable(getApplicationContext())){
+//                    requestInfo(Utils.getToken());
+//                } else {
+//                    showMessage("Отсутсвует подключение к интернету");
+//                    swipeRefreshLayout.setRefreshing(false);
+//                }
             }
         });
 
         findViewById(R.id.button_history).setOnClickListener(v -> startActivity(new Intent(
                 BriefcaseActivity.this, HistoryActivity.class
+        )));
+
+        findViewById(R.id.button_account).setOnClickListener(v -> startActivity(new Intent(
+                BriefcaseActivity.this, LoginActivity.class
         )));
 
         findViewById(R.id.fab_stock).setOnClickListener(v -> startActivity(new Intent(
@@ -97,7 +116,30 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         briefcaseDao = App.getInstance().getDatabase().briefcaseDao();
 
-        getInfo();
+//        getInfo();
+    }
+
+    public void forcedUpdate(){
+        if(Utils.isNetworkAvailable(getApplicationContext())){
+            requestInfo(Utils.getToken());
+        } else {
+            showMessage("Отсутсвует подключение к интернету");
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+
+    public void showSellStockFragment(String stockId, String name, int count) {
+
+        SellStockFragment sellStockFragment = SellStockFragment.newInstance();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("stockId", stockId);
+        bundle.putString("name", name);
+        bundle.putInt("count", count);
+        sellStockFragment.setArguments(bundle);
+
+        sellStockFragment.show(getSupportFragmentManager(),"sellStockFragment");
     }
 
 
@@ -168,7 +210,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                         Log.d("testing", "getAccountInfo/onResponse");
                         swipeRefreshLayout.setRefreshing(false);
                         int statusCode = response.code();
-                        if(statusCode == 200) {
+                        if(statusCode == 200 && response.body() != null) {
                             Log.d("testing", "getAccountInfo/onResponse/response 200");
 
                             AccountInfo accountInfo = response.body();
@@ -181,7 +223,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                             getNewToken();
                         } else {
                             Log.d("testing", "getAccountInfo/onResponse/something wrong");
-                            showMessage(String.valueOf(response.code()));
+                            showMessage(String.valueOf(statusCode));
                         }
                     }
 
@@ -206,7 +248,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                         Log.d("testing", "refreshAccessToken/onResponse");
                         int statusCode = response.code();
-                        if(statusCode == 200) {
+                        if(statusCode == 200 && response.body() != null) {
                             Log.d("testing", "refreshAccessToken/onResponse/response 200");
                             Utils.setToken(response.body());
 
@@ -215,7 +257,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                             startActivity(new Intent(BriefcaseActivity.this, LoginActivity.class));
                         } else {
                             Log.d("testing", "refreshAccessToken/onResponse/something wrong");
-                            showMessage(String.valueOf(response.code()));
+                            showMessage(String.valueOf(statusCode));
                         }
                     }
 

@@ -23,6 +23,11 @@ import com.paint.stockstore.model.User;
 import com.paint.stockstore.service.Utils;
 import com.paint.stockstore.service.RetrofitService;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function;
@@ -52,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
     void init(){
         textLogin = (EditText) findViewById(R.id.textLogin);
-        textLogin.setText("r2d2");
+        textLogin.setText("r5d5");
         textPassword = (EditText) findViewById(R.id.textPassword);
         textPassword.setText("12345678");
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
@@ -109,12 +114,10 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-
             }
 
             @Override
             public void onComplete() {
-
             }
         });
     }
@@ -139,17 +142,26 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                         Log.d("testing", "AccessToken/onResponse");
+                        showProgress(false);
                         int statusCode = response.code();
                         if(statusCode == 200) {
                             Log.d("testing", "AccessToken/onResponse/response 200");
                             Utils.setToken(response.body());
 
-                            showProgress(false);
                             onSuccessfulAuth();
+                        } else if (statusCode == 401) {
+//                            showMessage(response.raw().message());
+
+                            try {
+                                JSONObject jObjError = new JSONObject(response.errorBody().string());
+                                showMessage(jObjError.getString("message"));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            Log.d("testing", "401");
                         } else {
-                            showProgress(false);
                             Log.d("testing", "AccessToken/onResponse/something wrong");
-                            showMessage(response.errorBody().toString());
+                            showMessage(response.errorBody().source().toString());
                         }
                     }
 
@@ -200,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
+//TODO replace this
 //    public void trimAndFilterText(){
 //        RxTextView
 //                .textChanges(searchEditText)

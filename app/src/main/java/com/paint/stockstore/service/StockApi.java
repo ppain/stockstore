@@ -2,20 +2,20 @@ package com.paint.stockstore.service;
 
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.AccountInfo;
-import com.paint.stockstore.model.InfoStock;
+import com.paint.stockstore.model.PageOfStocks;
+import com.paint.stockstore.model.PageOfTransactions;
 import com.paint.stockstore.model.RefreshToken;
-import com.paint.stockstore.model.Stock;
+import com.paint.stockstore.model.Transaction;
 import com.paint.stockstore.model.User;
+
+import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface StockApi {
@@ -36,29 +36,37 @@ public interface StockApi {
     Call<AccessToken> postLogin(
             @Body User user);
 
-    @GET("account/info?id={id}")
-    Call<InfoStock> geTest(
-            @Path("id") String id,
-            @Header("Authorization") String token);
-
     @GET("account/info")
     Call<AccountInfo> getAccountInfo(
             @Header("Authorization") String token);
 
-    @GET("/api/stocks")
-    Call<Stock> getAccountInfoStockParam(
+    @GET("stocks")
+    Call<PageOfStocks> getStock(
             @Query("search") String search,
             @Query("count") int count,
             @Query("itemId") int itemId);
 
-    @GET("/api/stocks")
-    Call<Stock> getAccountInfoStock();
+    @Headers("Content-Type: application/json")
+    @POST("transaction/buy")
+    Call<JSONObject> buyStock(
+            @Header("Authorization") String token,
+            @Body Transaction transaction);
 
+    @POST("transaction/sell")
+    Call<JSONObject> sellStock(
+            @Header("Authorization") String token,
+            @Body Transaction transaction);
 
-    //    @FormUrlEncoded
-//    @Headers("Content-Type: application/x-www-form-urlencoded")
-//    @POST("part_auth/signup")
-//    Call<AccessToken> postReg(
-//            @Field("login") String login,
-//            @Field("password") String password);
+    @Headers("Content-Type: application/json")
+    @GET("transaction/history")
+    Call<PageOfTransactions> getHistory(
+            @Header("Authorization") String token,
+            @Query("search") String search,
+            @Query("count") int count,
+            @Query("itemId") int itemId);
+
+//    @GET("account/info?id={id}")
+//    Call<InfoStock> geTest(
+//            @Header("Authorization") String token,
+//            @Path("id") String id);
 }

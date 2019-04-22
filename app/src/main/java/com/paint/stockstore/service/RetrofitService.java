@@ -15,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitService {
     private static RetrofitService instance;
     private static final String BASE_URL = "https://stocks-store-202.herokuapp.com/api/";
+//    private static final String BASE_URL = "https://warm-citadel-97897.herokuapp.com/api/";
     private Retrofit retrofit;
 
 //    private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {

@@ -13,7 +13,7 @@ public class LaunchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preload);
+        setContentView(R.layout.activity_launch);
 
 //        TokenStoreHelper.init(getApplicationContext());
 
@@ -36,7 +36,7 @@ public class LaunchActivity extends AppCompatActivity {
 
 //        startActivity(new Intent(LaunchActivity.this, StockActivity.class));
 //        startActivity(new Intent(LaunchActivity.this, BriefcaseActivity.class));
-//        startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
+//        startActivity(new Intent(LaunchActivity.this, HistoryActivity.class));
 
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         finish();

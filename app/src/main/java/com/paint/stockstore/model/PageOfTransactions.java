@@ -4,8 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Stock {
-
+public class PageOfTransactions {
     @SerializedName("nextItemId")
     private int nextItemId;
 
@@ -13,9 +12,9 @@ public class Stock {
     private int prevItemId;
 
     @SerializedName("items")
-    private List<InfoStock> items;
+    private List<TransactionHistoryRecord> items;
 
-    public Stock(int nextItemId, int prevItemId, List<InfoStock> items) {
+    public PageOfTransactions(int nextItemId, int prevItemId, List<TransactionHistoryRecord> items) {
         this.nextItemId = nextItemId;
         this.prevItemId = prevItemId;
         this.items = items;
@@ -37,17 +36,11 @@ public class Stock {
         this.prevItemId = prevItemId;
     }
 
-    public List<InfoStock> getItems() {
+    public List<TransactionHistoryRecord> getItems() {
         return items;
     }
 
-    public void setItems(List<InfoStock> items) {
+    public void setItems(List<TransactionHistoryRecord> items) {
         this.items = items;
     }
-
-
-    public List<InfoStock> getStock() {
-        return items;
-    }
-
 }

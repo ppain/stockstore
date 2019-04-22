@@ -6,9 +6,18 @@
     <string name="signup">Создать аккаунт</string>
     <string name="pattern">^[a-z|A-Z|\d|_]{3,100}$</string>
     <string name="hint_search">Поиск акций</string>
+    <string name="history">История транзакций</string>
     <string name="default_balance">0</string>
+    <string name="amount">шт</string>
     <string name="rub">\u20BD</string>
+    <string name="ruble">р (</string>
+    <string name="percent">%)</string>
+    <string name="arrow_up">\u21D1</string>
+    <string name="arrow_down">\u21D3</string>
     <string name="part_price"> р</string>
     <string name="part_count"> шт</string>
     <string name="stock">Акции</string>
+    <string name="buy">Купить</string>
+    <string name="sell">Продать</string>
+    <string name="dots">…</string>
 </resources>

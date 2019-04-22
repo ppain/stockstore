@@ -1,7 +1,6 @@
 package com.paint.stockstore.service;
 
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
