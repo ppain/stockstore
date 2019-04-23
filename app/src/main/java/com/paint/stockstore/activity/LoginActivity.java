@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
     void init(){
         textLogin = (EditText) findViewById(R.id.textLogin);
-        textLogin.setText("r5d5");
+        textLogin.setText("r1d1");
         textPassword = (EditText) findViewById(R.id.textPassword);
         textPassword.setText("12345678");
         buttonLogin = (Button) findViewById(R.id.buttonAuth);

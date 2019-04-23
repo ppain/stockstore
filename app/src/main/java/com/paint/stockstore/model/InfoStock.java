@@ -16,7 +16,6 @@ public class InfoStock {
     @SerializedName("id")
     private Long id;
 
-    @Ignore
     @SerializedName("code")
     private String code;
 
