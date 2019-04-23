@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import com.paint.stockstore.model.AccessToken;
 
@@ -33,12 +35,20 @@ public class Utils {
         prefsEditor.apply();
     }
 
-
     public static boolean isNetworkAvailable (Context context) {
         ConnectivityManager cm
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
-        return (activeNetworkInfo != null && activeNetworkInfo.isConnected());
+       if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
+           return true;
+        } else {
+           showMessage("Отсутсвует подключение к интернету", context);
+           return false;
+       }
+    }
+
+    public static void showMessage(@NonNull String text, Context context){
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
     }
 
 

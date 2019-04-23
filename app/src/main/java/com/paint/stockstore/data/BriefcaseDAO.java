@@ -10,28 +10,36 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 import com.paint.stockstore.model.InfoStock;
+import com.paint.stockstore.model.AccountInfo;
+import com.paint.stockstore.service.AccountModel;
 
 import java.util.List;
 
 @Dao
 public interface BriefcaseDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(List<InfoStock> infoStock);
+    void insertStock(List<InfoStock> infoStock);
 
-    @Update
-    void update(List<InfoStock> infoStock);
-
-    @Delete
-    void delete(List<InfoStock> infoStock);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAccount(AccountModel accountModel);
 
     @Query("DELETE FROM InfoStock")
-    void clear();
+    void clearStock();
+
+    @Query("DELETE FROM AccountModel")
+    void clearAccount();
 
     @Query("SELECT * FROM InfoStock")
-    List<InfoStock> getData();
+    List<InfoStock> getStock();
+
+    @Query("SELECT * FROM AccountModel")
+    AccountModel getAccount();
 
     @Query("SELECT * FROM InfoStock")
-    Single<List<InfoStock>> getRxData();
+    Single<List<InfoStock>> getRxStock();
+
+    @Query("SELECT * FROM AccountModel")
+    Single<AccountModel> getRxAccount();
 
 //    @Query("SELECT * FROM InfoStock")
 //    Flowable<List<InfoStock>> getAllData();
