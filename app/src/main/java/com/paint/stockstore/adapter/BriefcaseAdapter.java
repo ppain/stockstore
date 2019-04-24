@@ -108,13 +108,8 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
         holder.priceDeltaItem.setText(priceDelta);
         holder.countItem.setText(count);
 
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sellAdapterClickListener.onItemClicked(String.valueOf(model.getId()),
-                        model.getName(), model.getCount());
-            }
-        });
+        holder.parentLayout.setOnClickListener(v -> sellAdapterClickListener.onItemClicked(String.valueOf(model.getId()),
+                model.getName(), model.getCount()));
     }
 
     @Override

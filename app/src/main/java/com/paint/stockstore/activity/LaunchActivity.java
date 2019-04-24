@@ -16,19 +16,16 @@ public class LaunchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launch);
 
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                testAndStart();
-            }
-        }, 1000);
+        handler.postDelayed(this::testAndStart, 1000);
     }
 
-    void testAndStart() {
-        if (!Utils.getToken().isEmpty()) {
-            startActivity(new Intent(LaunchActivity.this, BriefcaseActivity.class));
+    //todo rename
+    private void testAndStart() {
+        if (Utils.getToken().isEmpty()) {
+            startActivity(new Intent(this, LoginActivity.class));
         } else {
-            startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
+            startActivity(new Intent(this, BriefcaseActivity.class));
+
         }
 
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);

@@ -39,7 +39,7 @@ public class InfoStock {
     @SerializedName("count")
     private int count;
 
-    public InfoStock(Long id, String code, String name, String iconUrl, float price, float priceDelta, int count) {
+    public InfoStock(@NonNull Long id, String code, @NonNull String name, String iconUrl, float price, float priceDelta, int count) {
         this.id = id;
         this.code = code;
         this.name = name;

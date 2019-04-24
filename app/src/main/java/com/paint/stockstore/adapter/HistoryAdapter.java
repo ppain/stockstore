@@ -68,7 +68,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         ;
         String codeAmount = model.getStock().getCode() + context.getString(R.string.dot) + String.valueOf(model.getAmount());
 
-        if (model.getType().equals(context.getString(R.string.sell_))) {
+        if (model.getType().equals(context.getString(R.string.txt_sell))) {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorRed));
         } else {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorGreen));

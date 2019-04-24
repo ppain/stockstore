@@ -5,10 +5,11 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
+
 import io.reactivex.Single;
 
 import com.paint.stockstore.model.InfoStock;
-import com.paint.stockstore.service.AccountModel;
+import com.paint.stockstore.model.AccountModel;
 
 import java.util.List;
 

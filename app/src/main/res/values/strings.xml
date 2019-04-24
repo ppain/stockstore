@@ -8,6 +8,7 @@
     <string name="hint_search">Поиск акций</string>
     <string name="history">История транзакций</string>
     <string name="default_balance">0</string>
+    <string name="default_name">UserName</string>
     <string name="amount">шт</string>
     <string name="rub">\u20BD</string>
     <string name="ruble">р (</string>
@@ -19,9 +20,19 @@
     <string name="stock">Акции</string>
     <string name="buy">Купить</string>
     <string name="sell">Продать</string>
-    <string name="sell_">Продать</string>
+    <string name="txt_sell">sell</string>
+    <string name="error_sale">Не может быть меньше 1 и больше имеющихся</string>
+    <string name="error_buy">Минимальная покупка 1</string>
+    <string name="sale">Продано</string>
+    <string name="paid">Оплачено</string>
     <string name="dots">…</string>
     <string name="dot">\u25CF</string>
     <string name="enter_amount">Введите количество</string>
     <string name="connection_error">Отсутсвует подключение к интернету</string>
+    <string name="tag_sell_fragment">sellStockFragment</string>
+    <string name="tag_buy_fragment">buyStockFragment</string>
+    <string name="txt_stock_id">stockId</string>
+    <string name="txt_name">name</string>
+    <string name="txt_count">count</string>
+    <string name="db_name">briefcase</string>
 </resources>

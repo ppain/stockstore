@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.paint.stockstore.R;
 import com.paint.stockstore.model.AccessToken;
 
 import java.util.concurrent.TimeUnit;
@@ -15,13 +16,28 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
 
     private static SharedPreferences sharedPref;
-    public static final String ACCESS_TOKEN = "accessToken";
-    public static final String REFRESH_TOKEN = "refreshToken";
-    public static final String TIMESTAMP = "timestamp";
-    public static final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
+    private static final String ACCESS_TOKEN = "accessToken";
+    private static final String REFRESH_TOKEN = "refreshToken";
+    private static final String TIMESTAMP = "timestamp";
+    private static final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
+
+    private static boolean FLAG_UPDATE = false;
+
+    public static final int COUNT_DEFAULT = 10;
+    public static final int ITEM_ID_DEFAULT = 1;
+    public static final int HIDE_ITEM = 5;
 
     private Utils() {
     }
+
+    public static boolean isFlagUpdate() {
+        return FLAG_UPDATE;
+    }
+
+    public static void setFlagUpdate(boolean flagUpdate) {
+        FLAG_UPDATE = flagUpdate;
+    }
+
 
     public static void initSharedPreferences(Context context) {
         if (sharedPref == null) {
@@ -29,11 +45,11 @@ public class Utils {
         }
     }
 
-    public static String getStore(String key) {
+    private static String getStore(String key) {
         return sharedPref.getString(key, "");
     }
 
-    public static void saveStore(String key, String value) {
+    private static void saveStore(String key, String value) {
         SharedPreferences.Editor prefsEditor = sharedPref.edit();
         prefsEditor.putString(key, value);
         prefsEditor.apply();
@@ -46,18 +62,18 @@ public class Utils {
         if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
             return true;
         } else {
-            showMessage("Отсутсвует подключение к интернету", context);
+            showMessage(context.getString(R.string.connection_error), context);
             return false;
         }
     }
 
 
     public static void showMessage(@NonNull String text, Context context) {
-        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
     }
 
 
-    public static Long getTime() {
+    private static Long getTime() {
         String timestamp = Utils.getStore(Utils.TIMESTAMP);
         return timestamp.isEmpty() ? 0L : Long.parseLong(timestamp);
     }

@@ -13,16 +13,12 @@ public class RetrofitService {
     private Retrofit retrofit;
 
     private RetrofitService() {
-
-        //TODO delete logs
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
-
         if (BuildConfig.DEBUG) {
             okHttpBuilder.addInterceptor(interceptor);
         }
-
         OkHttpClient client = okHttpBuilder.build();
 
         retrofit = new Retrofit.Builder()

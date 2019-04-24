@@ -2,6 +2,7 @@ package com.paint.stockstore.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
@@ -19,9 +20,9 @@ import com.paint.stockstore.service.RetrofitService;
 
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 import io.reactivex.Observable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.DisposableObserver;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,10 +46,8 @@ public class LoginActivity extends AppCompatActivity {
 
     void init() {
         textLogin = (EditText) findViewById(R.id.textLogin);
-//        TODO clear
-        textLogin.setText("r8d8");
+        TextView buttonReg = (TextView) findViewById(R.id.linkRegister);
         textPassword = (EditText) findViewById(R.id.textPassword);
-        textPassword.setText("12345678");
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
         progressBar = findViewById(R.id.progressBar);
 
@@ -58,35 +57,17 @@ public class LoginActivity extends AppCompatActivity {
 
         buttonLogin.setOnClickListener((v) -> {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
-                signin();
+                requestSignIn();
             }
         });
 
-        TextView register = (TextView) findViewById(R.id.linkRegister);
-        register.setMovementMethod(LinkMovementMethod.getInstance());
-        register.setOnClickListener((v) -> {
-            startActivity(new Intent(LoginActivity.this, RegActivity.class));
-        });
+        buttonReg.setMovementMethod(LinkMovementMethod.getInstance());
+        buttonReg.setOnClickListener((v) -> startActivity(new Intent(this, RegActivity.class)));
 
-        Observable<String> nameObservable = RxTextView.textChanges(textLogin).skip(1).map(new Function<CharSequence, String>() {
-            @Override
-            public String apply(CharSequence charSequence) throws Exception {
-                return charSequence.toString();
-            }
-        });
-        Observable<String> passwordObservable = RxTextView.textChanges(textPassword).skip(1).map(new Function<CharSequence, String>() {
-            @Override
-            public String apply(CharSequence charSequence) throws Exception {
-                return charSequence.toString();
-            }
-        });
+        Observable<String> nameObservable = RxTextView.textChanges(textLogin).skip(2).map(CharSequence::toString);
+        Observable<String> passwordObservable = RxTextView.textChanges(textPassword).skip(2).map(CharSequence::toString);
 
-        observable = Observable.combineLatest(nameObservable, passwordObservable, new BiFunction<String, String, Boolean>() {
-            @Override
-            public Boolean apply(String login, String password) throws Exception {
-                return validate(login, password);
-            }
-        });
+        observable = Observable.combineLatest(nameObservable, passwordObservable, this::validate);
 
         observable.subscribe(new DisposableObserver<Boolean>() {
             @Override
@@ -111,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void signin() {
+    public void requestSignIn() {
 
         showProgress(true);
 
@@ -122,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                 .postLogin(user)
                 .enqueue(new Callback<AccessToken>() {
                     @Override
-                    public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                    public void onResponse(@NonNull Call<AccessToken> call, @NonNull Response<AccessToken> response) {
                         showProgress(false);
                         int statusCode = response.code();
                         if (statusCode == 200 && response.body() != null) {
@@ -131,18 +112,19 @@ public class LoginActivity extends AppCompatActivity {
                             onSuccessfulAuth();
                         } else if (statusCode == 401) {
                             try {
+                                assert response.errorBody() != null;
                                 JSONObject jObjError = new JSONObject(response.errorBody().string());
                                 Utils.showMessage(jObjError.getString("message"), getApplicationContext());
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                Utils.showMessage(e.toString(), getApplicationContext());
                             }
                         } else {
-                            Utils.showMessage(response.errorBody().source().toString(), getApplicationContext());
+                            Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<AccessToken> call, Throwable t) {
+                    public void onFailure(@NonNull Call<AccessToken> call, @NonNull Throwable t) {
                         showProgress(false);
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
@@ -173,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void onSuccessfulAuth() {
-        startActivity(new Intent(LoginActivity.this, BriefcaseActivity.class));
+        startActivity(new Intent(this, BriefcaseActivity.class));
     }
 
     private void showProgress(boolean visible) {

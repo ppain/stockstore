@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.paint.stockstore.R;
-import com.paint.stockstore.adapter.BuyAdapterClickListener;
 import com.paint.stockstore.adapter.StockAdapter;
 import com.paint.stockstore.fragment.BuyStockFragment;
 import com.paint.stockstore.model.InfoStock;
@@ -26,10 +26,10 @@ import com.paint.stockstore.service.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,9 +43,6 @@ public class StockActivity extends AppCompatActivity {
     private RecyclerView rvStocks;
     private LinearLayoutManager llManager;
     private Boolean isLoaded = false;
-    private final int COUNT_DEFAULT = 10;
-    private final int ITEM_ID_DEFAULT = 1;
-    private final int HIDE_ITEM = 5;
     private int nextItemId;
 
     @Override
@@ -53,12 +50,13 @@ public class StockActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock);
 
-        init();
+        initUI();
+        initAdapter();
+        initClearRequest("");
     }
 
 
-    void init() {
-
+    void initUI() {
         Toolbar toolbar = findViewById(R.id.toolbar_stock);
         setSupportActionBar(toolbar);
 
@@ -70,24 +68,14 @@ public class StockActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_stock);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                initClearRequest("");
-            }
-        });
-
-        initAdapter();
-
-        initClearRequest("");
+        swipeRefreshLayout.setOnRefreshListener(() -> initClearRequest(""));
     }
-
 
     @SuppressLint("CheckResult")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_stock, menu);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         MenuItem menuItemSearch = menu.findItem(R.id.action_search);
         menuItemSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -110,16 +98,11 @@ public class StockActivity extends AppCompatActivity {
 
         RxSearchObservable.fromView(searchView)
                 .debounce(300, TimeUnit.MILLISECONDS)
-                .filter(new Predicate<String>() {
-                    @Override
-                    public boolean test(String text) {
-                        return !(text.length() < 2);
-                    }
-                })
+                .filter(text -> !(text.length() < 2))
                 .distinctUntilChanged()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> initClearRequest(result),
+                .subscribe(this::initClearRequest,
                         throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
                 );
 
@@ -135,35 +118,30 @@ public class StockActivity extends AppCompatActivity {
 
     void initClearRequest(String query) {
         swipeRefreshLayout.setRefreshing(true);
-        nextItemId = ITEM_ID_DEFAULT;
+        nextItemId = Utils.ITEM_ID_DEFAULT;
         adapterStock.clearList();
-        requestStock(query, COUNT_DEFAULT, nextItemId);
+        requestStock(query, nextItemId);
     }
 
 
     void initAdapter() {
-        adapterStock = new StockAdapter(new ArrayList<>(), StockActivity.this, new BuyAdapterClickListener() {
-            @Override
-            public void onItemClicked(String stockId, String name) {
-                showBuyStockFragment(stockId, name);
-            }
-        });
+        adapterStock = new StockAdapter(new ArrayList<>(), StockActivity.this, this::showBuyStockFragment);
 
         rvStocks.setAdapter(adapterStock);
 
         rvStocks.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 0) {
                     int sizeList = adapterStock.getItemCount();
                     int lastVisibleItemPosition = llManager.findLastVisibleItemPosition();
                     Log.d("testing", "lastVisibleItemPosition: " + lastVisibleItemPosition
                             + ", adapterStock.getItemCount(): " + sizeList);
-                    if ((lastVisibleItemPosition > sizeList - HIDE_ITEM) && !isLoaded) {
+                    if ((lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM) && !isLoaded) {
                         isLoaded = true;
                         swipeRefreshLayout.setRefreshing(true);
-                        requestStock("", COUNT_DEFAULT, nextItemId);
+                        requestStock("", nextItemId);
                     }
                 }
             }
@@ -182,21 +160,21 @@ public class StockActivity extends AppCompatActivity {
         BuyStockFragment buyStockFragment = BuyStockFragment.newInstance();
 
         Bundle bundle = new Bundle();
-        bundle.putString("stockId", stockId);
-        bundle.putString("name", name);
+        bundle.putString(getString(R.string.txt_stock_id), stockId);
+        bundle.putString(getString(R.string.txt_name), name);
         buyStockFragment.setArguments(bundle);
 
-        buyStockFragment.show(getSupportFragmentManager(), "buyStockFragment");
+        buyStockFragment.show(getSupportFragmentManager(), getResources().getString(R.string.tag_buy_fragment));
     }
 
 
-    private void requestStock(String search, int count, int itemId) {
+    private void requestStock(String search, int itemId) {
         RetrofitService.getInstance()
                 .getApi()
-                .getStock(search, count, itemId)
+                .getStock(search, Utils.COUNT_DEFAULT, itemId)
                 .enqueue(new Callback<PageOfStocks>() {
                     @Override
-                    public void onResponse(Call<PageOfStocks> call, Response<PageOfStocks> response) {
+                    public void onResponse(@NonNull Call<PageOfStocks> call, @NonNull Response<PageOfStocks> response) {
                         int statusCode = response.code();
                         PageOfStocks body = response.body();
                         if (statusCode == 200 && body != null) {
@@ -204,13 +182,13 @@ public class StockActivity extends AppCompatActivity {
                             setList(body.getItems());
                             isLoaded = false;
                         } else {
-                            Utils.showMessage(String.valueOf(statusCode), getApplicationContext());
+                            Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<PageOfStocks> call, Throwable t) {
+                    public void onFailure(@NonNull Call<PageOfStocks> call, @NonNull Throwable t) {
                         swipeRefreshLayout.setRefreshing(false);
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }

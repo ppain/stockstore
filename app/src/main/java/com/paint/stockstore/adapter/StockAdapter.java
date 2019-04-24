@@ -23,7 +23,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
 
     private List<InfoStock> data = new ArrayList<>();
     private Context context;
-    public BuyAdapterClickListener buyAdapterClickListener;
+    private BuyAdapterClickListener buyAdapterClickListener;
 
     public StockAdapter(List<InfoStock> data, Context context, BuyAdapterClickListener buyAdapterClickListener) {
         this.data.addAll(data);
