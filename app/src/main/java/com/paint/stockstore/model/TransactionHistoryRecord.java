@@ -2,8 +2,6 @@ package com.paint.stockstore.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class TransactionHistoryRecord {
     @SerializedName("transactionId")
     private int transactionId;

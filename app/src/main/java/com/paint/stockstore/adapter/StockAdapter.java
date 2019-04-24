@@ -34,15 +34,15 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
 
     public class StockViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView iconUrlItem;
-        public TextView nameItem;
-        public TextView priceItem;
-        public TextView priceDeltaItem;
-        public TextView codeItem;
+        private ImageView iconUrlItem;
+        private TextView nameItem;
+        private TextView priceItem;
+        private TextView priceDeltaItem;
+        private TextView codeItem;
 
         LinearLayout parentLayout;
 
-        public StockViewHolder(View itemView) {
+        private StockViewHolder(View itemView) {
             super(itemView);
 
             iconUrlItem = (ImageView) itemView.findViewById(R.id.im_iconUrl_item);

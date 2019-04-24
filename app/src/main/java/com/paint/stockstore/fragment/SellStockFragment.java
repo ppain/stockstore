@@ -1,17 +1,14 @@
 package com.paint.stockstore.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.activity.BriefcaseActivity;
@@ -67,7 +64,7 @@ public class SellStockFragment extends BottomSheetDialogFragment {
                     Transaction transaction = new Transaction(stockId, amount);
                     requestSell(transaction, Utils.getToken());
                 } else {
-                    showMessage("Не может быть:\n- меньше 1\n- больше имеющихся");
+                    Utils.showMessage("Не может быть:\n- меньше 1\n- больше имеющихся", getActivity());
                 }
             }
         });
@@ -91,29 +88,20 @@ public class SellStockFragment extends BottomSheetDialogFragment {
                 .enqueue(new Callback<JSONObject>() {
                     @Override
                     public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                        Log.d("testing", "sellStock/onResponse");
                         int statusCode = response.code();
                         if(statusCode == 200) {
-                            showMessage("Продано");
+                            Utils.showMessage("Продано", getActivity());
                             ((BriefcaseActivity) getActivity()).forcedUpdate();
-                            Log.d("testing", "sellStock/onResponse/response 200");
                             onDestroyView();
                         } else {
-                            showMessage(String.valueOf(statusCode));
-                            Log.d("testing", "sellStock/onResponse/something wrong");
+                            Utils.showMessage(String.valueOf(statusCode), getActivity());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<JSONObject> call, Throwable t) {
-                        Log.d("testing", "sellStock/onFailure/all wrong");
-                        showMessage(t.toString());
+                        Utils.showMessage(t.toString(), getActivity());
                     }
                 });
     }
-
-    private void showMessage(@NonNull String text){
-        Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
-    }
-
 }

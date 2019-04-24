@@ -2,14 +2,11 @@ package com.paint.stockstore.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.paint.stockstore.R;
@@ -26,11 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class RegActivity extends AppCompatActivity {
-
-//    private final String PATTERN_LOGIN = getResources().getString(R.string.pattern);
-    private final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
 
     EditText textLogin, textPassword;
     Button buttonReg;
@@ -56,10 +49,8 @@ public class RegActivity extends AppCompatActivity {
         showProgress(false);
 
         buttonReg.setText(R.string.signup);
-        buttonReg.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
+        buttonReg.setOnClickListener((v) -> {
+            if(Utils.isNetworkAvailable(getApplicationContext())) {
                 signup();
             }
         });
@@ -93,12 +84,11 @@ public class RegActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-
+                Utils.showMessage(e.toString(), getApplicationContext());
             }
 
             @Override
             public void onComplete() {
-
             }
         });
     }
@@ -122,51 +112,44 @@ public class RegActivity extends AppCompatActivity {
                 .enqueue(new Callback<AccessToken>() {
                     @Override
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                        Log.d("testing", "AccessToken/onResponse");
                         int statusCode = response.code();
-                        if(statusCode == 200) {
-                            Log.d("testing", "AccessToken/onResponse/response 200");
+                        if(statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
 
                             showProgress(false);
                             onSuccessfulAuth();
                         } else {
                             showProgress(false);
-                            Log.d("testing", "AccessToken/onResponse/something wrong");
-                            showMessage(response.errorBody().toString());
+                            Utils.showMessage(response.errorBody().toString(), getApplicationContext());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AccessToken> call, Throwable t) {
                         showProgress(false);
-                        Log.d("testing", "AccessToken/onFailure/all wrong");
-                        showMessage(t.toString());
+                        Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
     }
 
-    private void showMessage(@NonNull String text){
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
 
-
-    //TODO replace this code
-    public boolean validate(String login, String password) {
+    private boolean validate(String login, String password) {
         boolean valid = true;
 
-        if (login.matches(PATTERN_LOGIN)) {
+        String setErrorLogin = Utils.validateLogin(login);
+        String setErrorPassword = Utils.validatePassword(password);
+        if (setErrorLogin.equals("")) {
             textLogin.setError(null);
         } else {
-            textLogin.setError("от 3 [a-z|A-Z|\\d]");
+            textLogin.setError(setErrorLogin);
             valid = false;
         }
 
-        if (password.isEmpty() || password.trim().length() < 1 || password.length() < 8 || password.length() > 64) {
-            textPassword.setError("от 8 до 64 символов");
-            valid = false;
-        } else {
+        if (setErrorPassword.equals("")) {
             textPassword.setError(null);
+        } else {
+            textPassword.setError(setErrorPassword);
+            valid = false;
         }
 
         return valid;
@@ -174,10 +157,9 @@ public class RegActivity extends AppCompatActivity {
 
 
     private void onSuccessfulAuth() {
-        Intent intent = new Intent(RegActivity.this, BriefcaseActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        startActivity(new Intent(RegActivity.this, BriefcaseActivity.class));
     }
+
 
     private void showProgress(boolean visible) {
         progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);

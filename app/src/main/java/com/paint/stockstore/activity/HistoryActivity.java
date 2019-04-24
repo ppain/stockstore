@@ -1,7 +1,6 @@
 package com.paint.stockstore.activity;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,17 +8,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.HistoryAdapter;
 import com.paint.stockstore.model.PageOfTransactions;
-import com.paint.stockstore.model.TransactionHistoryRecord;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.Utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -104,10 +100,6 @@ public class HistoryActivity extends AppCompatActivity {
         showProgress(false);
     }
 
-    private void showMessage(@NonNull String text){
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
-
 
     private void requestHistory(String token, String search, int count, int itemId){
         RetrofitService.getInstance()
@@ -116,25 +108,21 @@ public class HistoryActivity extends AppCompatActivity {
                 .enqueue(new Callback<PageOfTransactions>() {
                     @Override
                     public void onResponse(Call<PageOfTransactions> call, Response<PageOfTransactions> response) {
-                        Log.d("testing", "getHistory/onResponse");
                         int statusCode = response.code();
                         PageOfTransactions body = response.body();
                         if(statusCode == 200 && body != null) {
-                            Log.d("testing", "getHistory/onResponse/response 200");
                             nextItemId = body.getNextItemId();
                             setList(body);
                             isLoaded = false;
                         } else {
-                            showMessage(String.valueOf(statusCode));
-                            Log.d("testing", "getHistory/onResponse/something wrong");
+                            Utils.showMessage(String.valueOf(statusCode), getApplicationContext());
                             showProgress(false);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<PageOfTransactions> call, Throwable t) {
-                        showMessage(t.toString());
-                        Log.d("testing", "getHistory/onFailure/all wrong");
+                        Utils.showMessage(t.toString(), getApplicationContext());
                         showProgress(false);
                     }
                 });

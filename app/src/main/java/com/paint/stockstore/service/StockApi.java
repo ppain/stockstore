@@ -64,9 +64,4 @@ public interface StockApi {
             @Query("search") String search,
             @Query("count") int count,
             @Query("itemId") int itemId);
-
-//    @GET("account/info?id={id}")
-//    Call<InfoStock> geTest(
-//            @Header("Authorization") String token,
-//            @Path("id") String id);
 }

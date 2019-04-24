@@ -8,13 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paint.stockstore.R;
-import com.paint.stockstore.model.InfoStock;
 import com.paint.stockstore.model.TransactionHistoryRecord;
 
 import java.util.ArrayList;
@@ -33,14 +31,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     public class HistoryViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView iconUrlItem;
-        public TextView nameItem;
-        public TextView priceItem;
-        public TextView dateItem;
-        public TextView codeCountItem;
-        public View indicatorItem;
+        private ImageView iconUrlItem;
+        private TextView nameItem;
+        private TextView priceItem;
+        private TextView dateItem;
+        private TextView codeCountItem;
+        private View indicatorItem;
 
-        public HistoryViewHolder(View itemView) {
+        private HistoryViewHolder(View itemView) {
             super(itemView);
 
             iconUrlItem = (ImageView) itemView.findViewById(R.id.im_iconUrl_item);
@@ -69,7 +67,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         String totalPrice = String.valueOf(model.getTotalPrice()) + context.getString(R.string.rub);;
         String codeAmount = model.getStock().getCode() + context.getString(R.string.dot) + String.valueOf(model.getAmount());
 
-        if(model.getType() == context.getString(R.string.sell_)) {
+        if(model.getType().equals(context.getString(R.string.sell_))) {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorRed));
         } else {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorGreen));

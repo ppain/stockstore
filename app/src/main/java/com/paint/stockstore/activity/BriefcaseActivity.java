@@ -1,22 +1,18 @@
 package com.paint.stockstore.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.BriefcaseAdapter;
-import com.paint.stockstore.adapter.BuyAdapterClickListener;
 import com.paint.stockstore.adapter.SellBuyAdapterClickListener;
 import com.paint.stockstore.data.BriefcaseDAO;
 import com.paint.stockstore.fragment.SellStockFragment;
@@ -33,13 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 
 public class BriefcaseActivity extends AppCompatActivity {
 
@@ -48,19 +44,12 @@ public class BriefcaseActivity extends AppCompatActivity {
     private CollapsingToolbarLayout collapsingToolbar;
     private List<InfoStock> stock = new ArrayList<>();
     private TextView tvName;
-
-//    private DatabaseHelper database;
     private BriefcaseDAO briefcaseDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_briefcase);
-
-////        getSupportActionBar().setDisplayShowTitleEnabled(true);
-//        getSupportActionBar().setTitle(" UserName");
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
-//        getSupportActionBar().setIcon(R.drawable.ic_default_18dp);
 
         init();
     }
@@ -76,7 +65,6 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_briefcase));
         collapsingToolbar = findViewById(R.id.collapsingToolbarLayout);
-        //TODO replace unicode        https://unicode-table.com/ru/20BD/
         collapsingToolbar.setTitle(getString(R.string.default_balance) + getString(R.string.rub));
 
         tvName = (TextView) findViewById(R.id.tv_name_item);
@@ -158,69 +146,55 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void setList(List<InfoStock> listInfoStock){
-//        adapterBriefcase = new BriefcaseAdapter(accountInfo.getStocks());
-
         adapterBriefcase.swapList(listInfoStock);
         swipeRefreshLayout.setRefreshing(false);
     }
 
 
-//TODO test cache
     private void getInfo(){
-//        accountInfo = AccountInfo.generateData();
-        if(isRelevanceCache() && !briefcaseDao.getStock().isEmpty()){
-            getFromCache();
-
-        } else if (Utils.isNetworkAvailable(getApplicationContext())) {
-            requestInfo(Utils.getToken());
-
-        } else if (!briefcaseDao.getStock().isEmpty()){
+        if(isRelevanceCache() || !Utils.isNetworkAvailable(getApplicationContext())){
             getFromCache();
         } else {
-            Utils.showMessage("No data", getApplicationContext());
+            getFromNetwork();
         }
-//        setInfo();
     }
 
 
-
-    findViewById(R.id.button_account).setOnClickListener((v) -> {
+    private void getFromNetwork() {
         if(Utils.isNetworkAvailable(getApplicationContext())) {
-            startActivity(new Intent(BriefcaseActivity.this, LoginActivity.class));
+            requestInfo(Utils.getToken());
         }
-    });
-
-    private boolean isNotEmptyCache() {
-        Single<List<InfoStock>> stock = briefcaseDao.getRxStock();
-        stock.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((item) -> {
-                    return item.isEmpty();
-                });
     }
 
 
-
+    @SuppressLint("CheckResult")
     private void getFromCache() {
         Single<List<InfoStock>> stock = briefcaseDao.getRxStock();
         stock.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> setList(item),
+                .subscribe(item -> {
+                            if(!item.isEmpty()){
+                                setList(item);
+                            } else {
+                                getFromNetwork();
+                            }
+                        },
                         throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
                 );
 
         Single<AccountModel> account = briefcaseDao.getRxAccount();
         account.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> setInfo(item.getName(), item.getBalance()),
+                .subscribe(item -> {
+                            if(item.getName() != null){
+                                setInfo(item.getName(), item.getBalance());
+                            } else {
+                                getFromNetwork();
+                            }
+                        },
                         throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
                 );
     }
-
-
-//    private void showMessage(@NonNull String text){
-//        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-//    }
 
 
     private boolean isRelevanceCache(){
@@ -234,14 +208,18 @@ public class BriefcaseActivity extends AppCompatActivity {
         requestToken(Utils.getToken(), new RefreshToken(Utils.getRefreshToken()));
     }
 
+    @SuppressLint("CheckResult")
     private void setData(AccountInfo accountInfo){
         setInfo(accountInfo.getName(), accountInfo.getBalance());
         setList(accountInfo.getStock());
-        briefcaseDao.clearStock();
-        briefcaseDao.insertStock(accountInfo.getStock());
-        briefcaseDao.clearAccount();
-        briefcaseDao.insertAccount(new AccountModel(accountInfo.getName(), accountInfo.getBalance()));
-        Utils.setTime();
+
+        Completable.fromAction(() -> briefcaseDao.updateStock(accountInfo.getStock()
+                    , new AccountModel(accountInfo.getName(), accountInfo.getBalance())))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()-> Utils.setTime(),
+                        throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
+                );
     }
 
 
@@ -253,18 +231,14 @@ public class BriefcaseActivity extends AppCompatActivity {
                 .enqueue(new Callback<AccountInfo>() {
                     @Override
                     public void onResponse(Call<AccountInfo> call, Response<AccountInfo> response) {
-                        Log.d("testing", "getAccountInfo/onResponse");
                         swipeRefreshLayout.setRefreshing(false);
                         int statusCode = response.code();
                         if(statusCode == 200 && response.body() != null) {
-                            Log.d("testing", "getAccountInfo/onResponse/response 200");
 
                             setData(response.body());
                         } else if (statusCode == 403) {
                             getNewToken();
                         } else {
-                            Log.d("testing", "getAccountInfo/onResponse/something wrong");
-//                            showMessage(String.valueOf(statusCode));
                             Utils.showMessage(String.valueOf(statusCode), getApplicationContext());
                         }
                     }
@@ -272,13 +246,10 @@ public class BriefcaseActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<AccountInfo> call, Throwable t) {
                         swipeRefreshLayout.setRefreshing(false);
-                        Log.d("testing", "getAccountInfo/onFailure/all wrong");
-//                        showMessage(t.toString());
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
     }
-
 
     private void requestToken(String token, RefreshToken refreshToken){
 
@@ -289,24 +260,20 @@ public class BriefcaseActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                        Log.d("testing", "refreshAccessToken/onResponse");
                         int statusCode = response.code();
                         if(statusCode == 200 && response.body() != null) {
-                            Log.d("testing", "refreshAccessToken/onResponse/response 200");
                             Utils.setToken(response.body());
 
                             getInfo();
                         } else if (statusCode == 401) {
                             startActivity(new Intent(BriefcaseActivity.this, LoginActivity.class));
                         } else {
-                            Log.d("testing", "refreshAccessToken/onResponse/something wrong");
                             Utils.showMessage(String.valueOf(statusCode), getApplicationContext());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AccessToken> call, Throwable t) {
-                        Log.d("testing", "refreshAccessToken/onFailure/all wrong");
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });

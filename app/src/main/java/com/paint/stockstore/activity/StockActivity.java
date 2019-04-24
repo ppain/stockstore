@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.BuyAdapterClickListener;
@@ -24,13 +22,13 @@ import com.paint.stockstore.model.InfoStock;
 import com.paint.stockstore.model.PageOfStocks;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.RxSearchObservable;
+import com.paint.stockstore.service.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
@@ -122,7 +120,7 @@ public class StockActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> initClearRequest(result),
-                        throwable -> showMessage(throwable.toString())
+                        throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
                 );
 
         return super.onCreateOptionsMenu(menu);
@@ -179,11 +177,6 @@ public class StockActivity extends AppCompatActivity {
     }
 
 
-    private void showMessage(@NonNull String text){
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
-
-
     public void showBuyStockFragment(String stockId, String name) {
 
         BuyStockFragment buyStockFragment = BuyStockFragment.newInstance();
@@ -204,17 +197,14 @@ public class StockActivity extends AppCompatActivity {
                 .enqueue(new Callback<PageOfStocks>() {
                     @Override
                     public void onResponse(Call<PageOfStocks> call, Response<PageOfStocks> response) {
-                        Log.d("testing", "requestStock/onResponse");
                         int statusCode = response.code();
                         PageOfStocks body = response.body();
                         if(statusCode == 200 && body != null) {
-                            Log.d("testing", "requestStock/onResponse/response 200");
                             nextItemId = body.getNextItemId();
                             setList(body.getItems());
                             isLoaded = false;
                         } else {
-                            showMessage(String.valueOf(statusCode));
-                            Log.d("testing", "requestStock/onResponse/something wrong");
+                            Utils.showMessage(String.valueOf(statusCode), getApplicationContext());
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     }
@@ -222,8 +212,7 @@ public class StockActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<PageOfStocks> call, Throwable t) {
                         swipeRefreshLayout.setRefreshing(false);
-                        showMessage(t.toString());
-                        Log.d("testing", "requestStock/onFailure/all wrong");
+                        Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
     }

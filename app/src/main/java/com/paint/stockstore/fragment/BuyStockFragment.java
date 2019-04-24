@@ -1,7 +1,6 @@
 package com.paint.stockstore.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.Transaction;
@@ -51,43 +49,18 @@ public class BuyStockFragment extends BottomSheetDialogFragment {
 
         textAmount = (EditText) view.findViewById(R.id.textAmount);
 
-//        RxTextView.textChanges(textCount)
-//                .map(new Function<CharSequence, String>() {
-//                    @Override
-//                    public String apply(CharSequence charSequence) throws Exception {
-//                        return charSequence.toString();
-//                    }
-//                })
-//                .filter(value -> value.matches(PATTERN_INPUT))
-//                .map(new Function<String, Integer>() {
-//                    @Override
-//                    public Integer apply(String value) throws Exception {
-//                        return Integer.parseInt(value);
-//                    }
-//                })
-//                .filter(value -> value > 0)
-//                .subscribe(value -> {
-//                    setClickable(true);
-//                    showMessage(String.valueOf(value));
-//                });
-
-
-//                        setClickable(true));
-
         Button buttonBuy = (Button) view.findViewById(R.id.buttonDialog);
         buttonBuy.setText(R.string.buy);
 
-        buttonBuy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String amount = textAmount.getText().toString();
 
-                if (validate(amount)){
-                    Transaction transaction = new Transaction(stockId, amount);
-                    requestBuy(transaction, Utils.getToken());
-                } else {
-                    showMessage("Минимальная покупка 1");
-                }
+        buttonBuy.setOnClickListener((v) -> {
+            String amount = textAmount.getText().toString();
+
+            if (validate(amount)){
+                Transaction transaction = new Transaction(stockId, amount);
+                requestBuy(transaction, Utils.getToken());
+            } else {
+                Utils.showMessage("Минимальная покупка 1", getActivity());
             }
         });
 
@@ -107,28 +80,19 @@ public class BuyStockFragment extends BottomSheetDialogFragment {
                 .enqueue(new Callback<JSONObject>() {
                     @Override
                     public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                        Log.d("testing", "buyStock/onResponse");
                         int statusCode = response.code();
                         if(statusCode == 200) {
-                            showMessage("Оплачено");
+                            Utils.showMessage("Оплачено", getActivity());
                             onDestroyView();
-                            Log.d("testing", "buyStock/onResponse/response 200");
                         } else {
-                            showMessage(String.valueOf(statusCode));
-                            Log.d("testing", "buyStock/onResponse/something wrong");
+                            Utils.showMessage(String.valueOf(statusCode), getActivity());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<JSONObject> call, Throwable t) {
-                        Log.d("testing", "buyStock/onFailure/all wrong");
-                        showMessage(t.toString());
+                        Utils.showMessage(t.toString(), getActivity());
                     }
                 });
     }
-
-    private void showMessage(@NonNull String text){
-        Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
-    }
-
 }

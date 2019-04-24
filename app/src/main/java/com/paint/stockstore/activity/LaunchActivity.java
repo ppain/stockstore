@@ -15,8 +15,6 @@ public class LaunchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
 
-//        TokenStoreHelper.init(getApplicationContext());
-
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -27,16 +25,11 @@ public class LaunchActivity extends AppCompatActivity {
     }
 
     void testAndStart(){
-        String token = Utils.getToken();
-        if(token.isEmpty()){
-            startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
-        } else {
+        if(!Utils.getToken().isEmpty()){
             startActivity(new Intent(LaunchActivity.this, BriefcaseActivity.class));
+        } else {
+            startActivity(new Intent(LaunchActivity.this, LoginActivity.class));
         }
-
-//        startActivity(new Intent(LaunchActivity.this, StockActivity.class));
-//        startActivity(new Intent(LaunchActivity.this, BriefcaseActivity.class));
-//        startActivity(new Intent(LaunchActivity.this, HistoryActivity.class));
 
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         finish();

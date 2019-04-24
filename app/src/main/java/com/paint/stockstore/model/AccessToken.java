@@ -2,7 +2,6 @@ package com.paint.stockstore.model;
 
 import com.google.gson.annotations.SerializedName;
 
-//TODO encrypt token
 public class AccessToken {
 
     @SerializedName("accessToken")

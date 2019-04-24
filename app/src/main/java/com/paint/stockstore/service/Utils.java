@@ -16,6 +16,7 @@ public class Utils {
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String REFRESH_TOKEN = "refreshToken";
     public static final String TIMESTAMP = "timestamp";
+    public static final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
 
     private Utils(){}
 
@@ -47,8 +48,9 @@ public class Utils {
        }
     }
 
+
     public static void showMessage(@NonNull String text, Context context){
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -61,6 +63,7 @@ public class Utils {
         saveStore(TIMESTAMP, String.valueOf(System.currentTimeMillis()));
     }
 
+
     public static String getToken(){
         return getStore(ACCESS_TOKEN);
     }
@@ -72,6 +75,25 @@ public class Utils {
     public static void setToken(AccessToken token){
         saveStore(ACCESS_TOKEN, token.getAccessToken());
         saveStore(REFRESH_TOKEN, token.getRefreshToken());
+    }
+
+
+    public static String validateLogin(String login) {
+        String setErrorLogin = "";
+
+        if (!login.matches(Utils.PATTERN_LOGIN)) {
+            setErrorLogin = "от 3 [a-z|A-Z|\\d]";
+        }
+        return setErrorLogin;
+    }
+
+    public static String validatePassword(String password) {
+        String setErrorPassword = "";
+
+        if (password.isEmpty() || password.trim().length() < 1 || password.length() < 8 || password.length() > 64) {
+            setErrorPassword = "от 8 до 64 символов";
+        }
+        return setErrorPassword;
     }
 
 }

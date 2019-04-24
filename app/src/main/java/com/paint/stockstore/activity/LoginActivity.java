@@ -1,32 +1,23 @@
 package com.paint.stockstore.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.paint.stockstore.BuildConfig;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.User;
 import com.paint.stockstore.service.Utils;
 import com.paint.stockstore.service.RetrofitService;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.BiFunction;
@@ -37,9 +28,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-
-//    private final String PATTERN_LOGIN = getResources().getString(R.string.pattern);
-    private final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
 
     private EditText textLogin, textPassword;
     private Button buttonLogin;
@@ -57,7 +45,8 @@ public class LoginActivity extends AppCompatActivity {
 
     void init(){
         textLogin = (EditText) findViewById(R.id.textLogin);
-        textLogin.setText("r1d1");
+//        TODO clear
+        textLogin.setText("r7d7");
         textPassword = (EditText) findViewById(R.id.textPassword);
         textPassword.setText("12345678");
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
@@ -67,24 +56,17 @@ public class LoginActivity extends AppCompatActivity {
 
         buttonLogin.setText(R.string.sigin);
 
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        buttonLogin.setOnClickListener((v) -> {
+            if(Utils.isNetworkAvailable(getApplicationContext())) {
                 signin();
             }
         });
 
         TextView register = (TextView)findViewById(R.id.linkRegister);
         register.setMovementMethod(LinkMovementMethod.getInstance());
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-            }
+        register.setOnClickListener((v) -> {
+                startActivity(new Intent(LoginActivity.this, RegActivity.class));
         });
-
 
         Observable<String> nameObservable = RxTextView.textChanges(textLogin).skip(1).map(new Function<CharSequence, String>() {
             @Override
@@ -114,6 +96,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
+                Utils.showMessage(e.toString(), getApplicationContext());
             }
 
             @Override
@@ -134,67 +117,55 @@ public class LoginActivity extends AppCompatActivity {
 
         User user = new User(textLogin.getText().toString(), textPassword.getText().toString());
 
-        //TODO cut methot in single file for reg
         RetrofitService.getInstance()
                 .getApi()
                 .postLogin(user)
                 .enqueue(new Callback<AccessToken>() {
                     @Override
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                        Log.d("testing", "AccessToken/onResponse");
                         showProgress(false);
                         int statusCode = response.code();
-                        if(statusCode == 200) {
-                            Log.d("testing", "AccessToken/onResponse/response 200");
+                        if(statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
 
                             onSuccessfulAuth();
                         } else if (statusCode == 401) {
-//                            showMessage(response.raw().message());
-
                             try {
                                 JSONObject jObjError = new JSONObject(response.errorBody().string());
-                                showMessage(jObjError.getString("message"));
+                                Utils.showMessage(jObjError.getString("message"), getApplicationContext());
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            Log.d("testing", "401");
                         } else {
-                            Log.d("testing", "AccessToken/onResponse/something wrong");
-                            showMessage(response.errorBody().source().toString());
+                            Utils.showMessage(response.errorBody().source().toString(), getApplicationContext());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AccessToken> call, Throwable t) {
                         showProgress(false);
-                        Log.d("testing", "AccessToken/onFailure/all wrong");
-                        showMessage(t.toString());
+                        Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
     }
 
-    private void showMessage(@NonNull String text){
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
-
-
-    //TODO replace this code
-    public boolean validate(String login, String password) {
+    private boolean validate(String login, String password) {
         boolean valid = true;
 
-        if (login.matches(PATTERN_LOGIN)) {
+        String setErrorLogin = Utils.validateLogin(login);
+        String setErrorPassword = Utils.validatePassword(password);
+        if (setErrorLogin.equals("")) {
             textLogin.setError(null);
         } else {
-            textLogin.setError("от 3 [a-z|A-Z|\\d]");
+            textLogin.setError(setErrorLogin);
             valid = false;
         }
 
-        if (password.isEmpty() || password.trim().length() < 1 || password.length() < 8 || password.length() > 64) {
-            textPassword.setError("от 8 до 64 символов");
-            valid = false;
-        } else {
+        if (setErrorPassword.equals("")) {
             textPassword.setError(null);
+        } else {
+            textPassword.setError(setErrorPassword);
+            valid = false;
         }
 
         return valid;
@@ -202,31 +173,10 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void onSuccessfulAuth() {
-        Intent intent = new Intent(LoginActivity.this, BriefcaseActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        startActivity(new Intent(LoginActivity.this, BriefcaseActivity.class));
     }
 
     private void showProgress(boolean visible) {
         progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
-
-
-//TODO replace this
-//    public void trimAndFilterText(){
-//        RxTextView
-//                .textChanges(searchEditText)
-//                .map(text -> text.toString().trim())
-//                .filter(text -> text.length() != 0);
-//    }
-//
-//    public void loginAndPassword(){
-//        Observable
-//                .combineLatest(
-//                        RxTextView.textChanges(loginEditText),
-//                        RxTextView.textChanges(passwordEditText),
-//                        (login, password) -> login.length() > 0 && password.length() > 0)
-//                .subscribe(loginButton::setEnabled);
-//    }
-
 }

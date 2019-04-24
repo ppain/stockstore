@@ -2,17 +2,9 @@ package com.paint.stockstore.service;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-import com.google.gson.annotations.SerializedName;
-import com.paint.stockstore.model.AccountInfo;
-import com.paint.stockstore.model.InfoStock;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 @Entity
 public class AccountModel {
