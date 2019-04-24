@@ -17,7 +17,7 @@ public class App extends Application {
         super.onCreate();
         instance = this;
         database = Room.databaseBuilder(getApplicationContext(), DatabaseHelper.class, "briefcase")
-                .allowMainThreadQueries()
+//                .allowMainThreadQueries()
                 .build();
 
         Utils.initSharedPreferences(getApplicationContext());

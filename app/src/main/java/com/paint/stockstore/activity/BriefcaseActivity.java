@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -162,23 +165,56 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
 
-//TODO test cash
+//TODO test cache
     private void getInfo(){
 //        accountInfo = AccountInfo.generateData();
         if(isRelevanceCache() && !briefcaseDao.getStock().isEmpty()){
-            setInfo(briefcaseDao.getAccount().getName(), briefcaseDao.getAccount().getBalance());
-            setList(briefcaseDao.getStock());
+            getFromCache();
 
         } else if (Utils.isNetworkAvailable(getApplicationContext())) {
             requestInfo(Utils.getToken());
 
         } else if (!briefcaseDao.getStock().isEmpty()){
-            setInfo(briefcaseDao.getAccount().getName(), briefcaseDao.getAccount().getBalance());
-            setList(briefcaseDao.getStock());
+            getFromCache();
         } else {
             Utils.showMessage("No data", getApplicationContext());
         }
 //        setInfo();
+    }
+
+
+
+    findViewById(R.id.button_account).setOnClickListener((v) -> {
+        if(Utils.isNetworkAvailable(getApplicationContext())) {
+            startActivity(new Intent(BriefcaseActivity.this, LoginActivity.class));
+        }
+    });
+
+    private boolean isNotEmptyCache() {
+        Single<List<InfoStock>> stock = briefcaseDao.getRxStock();
+        stock.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((item) -> {
+                    return item.isEmpty();
+                });
+    }
+
+
+
+    private void getFromCache() {
+        Single<List<InfoStock>> stock = briefcaseDao.getRxStock();
+        stock.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(item -> setList(item),
+                        throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
+                );
+
+        Single<AccountModel> account = briefcaseDao.getRxAccount();
+        account.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(item -> setInfo(item.getName(), item.getBalance()),
+                        throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
+                );
     }
 
 

@@ -121,7 +121,9 @@ public class StockActivity extends AppCompatActivity {
                 .distinctUntilChanged()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> initClearRequest(result));
+                .subscribe(result -> initClearRequest(result),
+                        throwable -> showMessage(throwable.toString())
+                );
 
         return super.onCreateOptionsMenu(menu);
     }

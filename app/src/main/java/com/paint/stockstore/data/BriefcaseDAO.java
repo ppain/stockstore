@@ -5,6 +5,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.Update;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
@@ -28,6 +29,13 @@ public interface BriefcaseDAO {
 
     @Query("DELETE FROM AccountModel")
     void clearAccount();
+
+//    TODO add transaction
+//    @Transaction
+//    void updateStock(List<InfoStock> infoStock) {
+//        clearStock();
+//        insertStock(infoStock);
+//    }
 
     @Query("SELECT * FROM InfoStock")
     List<InfoStock> getStock();
