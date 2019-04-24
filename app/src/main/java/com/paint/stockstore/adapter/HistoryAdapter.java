@@ -18,7 +18,7 @@ import com.paint.stockstore.model.TransactionHistoryRecord;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>{
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
     private List<TransactionHistoryRecord> data = new ArrayList<>();
     private Context context;
@@ -64,10 +64,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     public void onBindViewHolder(@NonNull HistoryAdapter.HistoryViewHolder holder, int position) {
         TransactionHistoryRecord model = data.get(position);
 
-        String totalPrice = String.valueOf(model.getTotalPrice()) + context.getString(R.string.rub);;
+        String totalPrice = String.valueOf(model.getTotalPrice()) + context.getString(R.string.rub);
+        ;
         String codeAmount = model.getStock().getCode() + context.getString(R.string.dot) + String.valueOf(model.getAmount());
 
-        if(model.getType().equals(context.getString(R.string.sell_))) {
+        if (model.getType().equals(context.getString(R.string.sell_))) {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorRed));
         } else {
             holder.indicatorItem.setBackgroundColor(ContextCompat.getColor(context, R.color.colorGreen));
@@ -93,7 +94,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     }
 
 
-    public void updateList(List<TransactionHistoryRecord> list){
+    public void updateList(List<TransactionHistoryRecord> list) {
         data.addAll(list);
 
         if (data != null) {

@@ -112,7 +112,7 @@ public class StockActivity extends AppCompatActivity {
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .filter(new Predicate<String>() {
                     @Override
-                    public boolean test(String text){
+                    public boolean test(String text) {
                         return !(text.length() < 2);
                     }
                 })
@@ -171,7 +171,7 @@ public class StockActivity extends AppCompatActivity {
     }
 
 
-    private void setList(List<InfoStock> list){
+    private void setList(List<InfoStock> list) {
         adapterStock.updateList(list);
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -186,11 +186,11 @@ public class StockActivity extends AppCompatActivity {
         bundle.putString("name", name);
         buyStockFragment.setArguments(bundle);
 
-        buyStockFragment.show(getSupportFragmentManager(),"buyStockFragment");
+        buyStockFragment.show(getSupportFragmentManager(), "buyStockFragment");
     }
 
 
-    private void requestStock(String search, int count, int itemId){
+    private void requestStock(String search, int count, int itemId) {
         RetrofitService.getInstance()
                 .getApi()
                 .getStock(search, count, itemId)
@@ -199,7 +199,7 @@ public class StockActivity extends AppCompatActivity {
                     public void onResponse(Call<PageOfStocks> call, Response<PageOfStocks> response) {
                         int statusCode = response.code();
                         PageOfStocks body = response.body();
-                        if(statusCode == 200 && body != null) {
+                        if (statusCode == 200 && body != null) {
                             nextItemId = body.getNextItemId();
                             setList(body.getItems());
                             isLoaded = false;

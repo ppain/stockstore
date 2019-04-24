@@ -20,10 +20,11 @@ public class Utils {
     public static final String TIMESTAMP = "timestamp";
     public static final String PATTERN_LOGIN = "^[a-z|A-Z|\\d|_]{3,100}$";
 
-    private Utils(){}
+    private Utils() {
+    }
 
-    public static void initSharedPreferences(Context context){
-        if(sharedPref == null) {
+    public static void initSharedPreferences(Context context) {
+        if (sharedPref == null) {
             sharedPref = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
         }
     }
@@ -38,49 +39,49 @@ public class Utils {
         prefsEditor.apply();
     }
 
-    public static boolean isNetworkAvailable (Context context) {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
-       if(activeNetworkInfo != null && activeNetworkInfo.isConnected()){
-           return true;
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            return true;
         } else {
-           showMessage("Отсутсвует подключение к интернету", context);
-           return false;
-       }
+            showMessage("Отсутсвует подключение к интернету", context);
+            return false;
+        }
     }
 
 
-    public static void showMessage(@NonNull String text, Context context){
+    public static void showMessage(@NonNull String text, Context context) {
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
     }
 
 
-    public static Long getTime(){
+    public static Long getTime() {
         String timestamp = Utils.getStore(Utils.TIMESTAMP);
         return timestamp.isEmpty() ? 0L : Long.parseLong(timestamp);
     }
 
-    public static void setTime(){
+    public static void setTime() {
         saveStore(TIMESTAMP, String.valueOf(System.currentTimeMillis()));
     }
 
-    public static boolean isRelevanceCache(){
+    public static boolean isRelevanceCache() {
         Long minToLife = TimeUnit.MINUTES.toMillis(5L);
         Long diff = System.currentTimeMillis() - getTime();
         return (diff - minToLife < 0);
     }
 
 
-    public static String getToken(){
+    public static String getToken() {
         return getStore(ACCESS_TOKEN);
     }
 
-    public static String getRefreshToken(){
+    public static String getRefreshToken() {
         return getStore(REFRESH_TOKEN);
     }
 
-    public static void setToken(AccessToken token){
+    public static void setToken(AccessToken token) {
         saveStore(ACCESS_TOKEN, token.getAccessToken());
         saveStore(REFRESH_TOKEN, token.getRefreshToken());
     }

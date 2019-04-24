@@ -77,7 +77,7 @@ public class BriefcaseActivity extends AppCompatActivity {
         adapterBriefcase = new BriefcaseAdapter(stock, BriefcaseActivity.this, new SellBuyAdapterClickListener() {
             @Override
             public void onItemClicked(String stockId, String name, int count) {
-                if(Utils.isNetworkAvailable(getApplicationContext())) {
+                if (Utils.isNetworkAvailable(getApplicationContext())) {
                     showSellStockFragment(stockId, name, count);
                 }
             }
@@ -92,21 +92,21 @@ public class BriefcaseActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.button_history).setOnClickListener((v) -> {
-            if(Utils.isNetworkAvailable(getApplicationContext())) {
+            if (Utils.isNetworkAvailable(getApplicationContext())) {
                 startActivity(new Intent(BriefcaseActivity.this, HistoryActivity.class));
             }
         });
 
 
         findViewById(R.id.button_account).setOnClickListener((v) -> {
-            if(Utils.isNetworkAvailable(getApplicationContext())) {
+            if (Utils.isNetworkAvailable(getApplicationContext())) {
                 startActivity(new Intent(BriefcaseActivity.this, LoginActivity.class));
             }
         });
 
 
         findViewById(R.id.fab_stock).setOnClickListener((v) -> {
-            if(Utils.isNetworkAvailable(getApplicationContext())) {
+            if (Utils.isNetworkAvailable(getApplicationContext())) {
                 startActivity(new Intent(BriefcaseActivity.this, StockActivity.class));
             }
         });
@@ -116,8 +116,8 @@ public class BriefcaseActivity extends AppCompatActivity {
         getInfo();
     }
 
-    public void forcedUpdate(){
-        if(Utils.isNetworkAvailable(getApplicationContext())) {
+    public void forcedUpdate() {
+        if (Utils.isNetworkAvailable(getApplicationContext())) {
             requestInfo(Utils.getToken());
         } else {
             swipeRefreshLayout.setRefreshing(false);
@@ -135,24 +135,24 @@ public class BriefcaseActivity extends AppCompatActivity {
         bundle.putInt("count", count);
         sellStockFragment.setArguments(bundle);
 
-        sellStockFragment.show(getSupportFragmentManager(),"sellStockFragment");
+        sellStockFragment.show(getSupportFragmentManager(), "sellStockFragment");
     }
 
 
-    private void setInfo(String name, float balance){
+    private void setInfo(String name, float balance) {
         collapsingToolbar.setTitle(String.valueOf(Math.round(balance * 100f) / 100f) + getString(R.string.rub));
         tvName.setText(name);
     }
 
 
-    private void setList(List<InfoStock> listInfoStock){
+    private void setList(List<InfoStock> listInfoStock) {
         adapterBriefcase.swapList(listInfoStock);
         swipeRefreshLayout.setRefreshing(false);
     }
 
 
-    private void getInfo(){
-        if(Utils.isRelevanceCache() || !Utils.isNetworkAvailable(getApplicationContext())){
+    private void getInfo() {
+        if (Utils.isRelevanceCache() || !Utils.isNetworkAvailable(getApplicationContext())) {
             getFromCache();
         } else {
             getFromNetwork();
@@ -161,7 +161,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void getFromNetwork() {
-        if(Utils.isNetworkAvailable(getApplicationContext())) {
+        if (Utils.isNetworkAvailable(getApplicationContext())) {
             requestInfo(Utils.getToken());
         }
     }
@@ -173,7 +173,7 @@ public class BriefcaseActivity extends AppCompatActivity {
         stock.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(item -> {
-                            if(!item.isEmpty()){
+                            if (!item.isEmpty()) {
                                 setList(item);
                             } else {
                                 getFromNetwork();
@@ -186,7 +186,7 @@ public class BriefcaseActivity extends AppCompatActivity {
         account.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(item -> {
-                            if(item.getName() != null){
+                            if (item.getName() != null) {
                                 setInfo(item.getName(), item.getBalance());
                             } else {
                                 getFromNetwork();
@@ -197,26 +197,26 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
 
-    private void getNewToken(){
+    private void getNewToken() {
         requestToken(Utils.getToken(), new RefreshToken(Utils.getRefreshToken()));
     }
 
     @SuppressLint("CheckResult")
-    private void setData(AccountInfo accountInfo){
+    private void setData(AccountInfo accountInfo) {
         setInfo(accountInfo.getName(), accountInfo.getBalance());
         setList(accountInfo.getStock());
 
         Completable.fromAction(() -> briefcaseDao.updateStock(accountInfo.getStock()
-                    , new AccountModel(accountInfo.getName(), accountInfo.getBalance())))
+                , new AccountModel(accountInfo.getName(), accountInfo.getBalance())))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(()-> Utils.setTime(),
+                .subscribe(() -> Utils.setTime(),
                         throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
                 );
     }
 
 
-    private void requestInfo(String token){
+    private void requestInfo(String token) {
 
         RetrofitService.getInstance()
                 .getApi()
@@ -226,7 +226,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                     public void onResponse(Call<AccountInfo> call, Response<AccountInfo> response) {
                         swipeRefreshLayout.setRefreshing(false);
                         int statusCode = response.code();
-                        if(statusCode == 200 && response.body() != null) {
+                        if (statusCode == 200 && response.body() != null) {
 
                             setData(response.body());
                         } else if (statusCode == 403) {
@@ -244,7 +244,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                 });
     }
 
-    private void requestToken(String token, RefreshToken refreshToken){
+    private void requestToken(String token, RefreshToken refreshToken) {
 
         RetrofitService.getInstance()
                 .getApi()
@@ -254,7 +254,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                         int statusCode = response.code();
-                        if(statusCode == 200 && response.body() != null) {
+                        if (statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
 
                             getInfo();

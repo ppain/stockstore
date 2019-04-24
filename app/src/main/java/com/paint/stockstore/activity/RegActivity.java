@@ -39,7 +39,7 @@ public class RegActivity extends AppCompatActivity {
         init();
     }
 
-    void init(){
+    void init() {
         textLogin = (EditText) findViewById(R.id.textLogin);
         textPassword = (EditText) findViewById(R.id.textPassword);
 
@@ -50,7 +50,7 @@ public class RegActivity extends AppCompatActivity {
 
         buttonReg.setText(R.string.signup);
         buttonReg.setOnClickListener((v) -> {
-            if(Utils.isNetworkAvailable(getApplicationContext())) {
+            if (Utils.isNetworkAvailable(getApplicationContext())) {
                 signup();
             }
         });
@@ -113,7 +113,7 @@ public class RegActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                         int statusCode = response.code();
-                        if(statusCode == 200 && response.body() != null) {
+                        if (statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
 
                             showProgress(false);

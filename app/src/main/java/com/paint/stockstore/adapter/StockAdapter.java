@@ -19,7 +19,7 @@ import com.paint.stockstore.model.InfoStock;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder>{
+public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
     private List<InfoStock> data = new ArrayList<>();
     private Context context;
@@ -82,8 +82,8 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
 
         if (fPriceDelta < 0) {
             holder.priceDeltaItem.setTextColor(colorRed);
-            percentDelta = - fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
-            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred  + percent;
+            percentDelta = -fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
+            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred + percent;
         } else {
             holder.priceDeltaItem.setTextColor(colorGreen);
             percentDelta = fPriceDelta * hundred / model.getPrice();
@@ -117,7 +117,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
     }
 
 
-    public void updateList(List<InfoStock> list){
+    public void updateList(List<InfoStock> list) {
         data.addAll(list);
 
         if (data != null) {

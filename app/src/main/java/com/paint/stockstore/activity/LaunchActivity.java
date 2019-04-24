@@ -24,8 +24,8 @@ public class LaunchActivity extends AppCompatActivity {
         }, 1000);
     }
 
-    void testAndStart(){
-        if(!Utils.getToken().isEmpty()){
+    void testAndStart() {
+        if (!Utils.getToken().isEmpty()) {
             startActivity(new Intent(LaunchActivity.this, BriefcaseActivity.class));
         } else {
             startActivity(new Intent(LaunchActivity.this, LoginActivity.class));

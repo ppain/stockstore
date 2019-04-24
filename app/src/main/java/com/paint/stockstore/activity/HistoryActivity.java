@@ -66,7 +66,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         initAdapter();
 
-        requestHistory(Utils.getToken(),"", COUNT_DEFAULT, ITEM_ID_DEFAULT);
+        requestHistory(Utils.getToken(), "", COUNT_DEFAULT, ITEM_ID_DEFAULT);
     }
 
 
@@ -87,7 +87,7 @@ public class HistoryActivity extends AppCompatActivity {
                     if ((lastVisibleItemPosition > sizeList - HIDE_ITEM) && !isLoaded) {
                         isLoaded = true;
                         showProgress(true);
-                        requestHistory(Utils.getToken(),"", COUNT_DEFAULT, nextItemId);
+                        requestHistory(Utils.getToken(), "", COUNT_DEFAULT, nextItemId);
                     }
                 }
             }
@@ -95,13 +95,13 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
 
-    private void setList(PageOfTransactions pageOfTransactions){
+    private void setList(PageOfTransactions pageOfTransactions) {
         adapterHistory.updateList(pageOfTransactions.getItems());
         showProgress(false);
     }
 
 
-    private void requestHistory(String token, String search, int count, int itemId){
+    private void requestHistory(String token, String search, int count, int itemId) {
         RetrofitService.getInstance()
                 .getApi()
                 .getHistory(token, search, count, itemId)
@@ -110,7 +110,7 @@ public class HistoryActivity extends AppCompatActivity {
                     public void onResponse(Call<PageOfTransactions> call, Response<PageOfTransactions> response) {
                         int statusCode = response.code();
                         PageOfTransactions body = response.body();
-                        if(statusCode == 200 && body != null) {
+                        if (statusCode == 200 && body != null) {
                             nextItemId = body.getNextItemId();
                             setList(body);
                             isLoaded = false;

@@ -43,10 +43,10 @@ public class LoginActivity extends AppCompatActivity {
         init();
     }
 
-    void init(){
+    void init() {
         textLogin = (EditText) findViewById(R.id.textLogin);
 //        TODO clear
-        textLogin.setText("r7d7");
+        textLogin.setText("r8d8");
         textPassword = (EditText) findViewById(R.id.textPassword);
         textPassword.setText("12345678");
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
@@ -57,15 +57,15 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin.setText(R.string.sigin);
 
         buttonLogin.setOnClickListener((v) -> {
-            if(Utils.isNetworkAvailable(getApplicationContext())) {
+            if (Utils.isNetworkAvailable(getApplicationContext())) {
                 signin();
             }
         });
 
-        TextView register = (TextView)findViewById(R.id.linkRegister);
+        TextView register = (TextView) findViewById(R.id.linkRegister);
         register.setMovementMethod(LinkMovementMethod.getInstance());
         register.setOnClickListener((v) -> {
-                startActivity(new Intent(LoginActivity.this, RegActivity.class));
+            startActivity(new Intent(LoginActivity.this, RegActivity.class));
         });
 
         Observable<String> nameObservable = RxTextView.textChanges(textLogin).skip(1).map(new Function<CharSequence, String>() {
@@ -125,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
                         showProgress(false);
                         int statusCode = response.code();
-                        if(statusCode == 200 && response.body() != null) {
+                        if (statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
 
                             onSuccessfulAuth();

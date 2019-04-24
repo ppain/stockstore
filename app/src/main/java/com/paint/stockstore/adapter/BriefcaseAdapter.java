@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.BriefcaseViewHolder>{
+public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.BriefcaseViewHolder> {
 
     private List<InfoStock> data = new ArrayList<>();
     private SellBuyAdapterClickListener sellAdapterClickListener;
@@ -87,8 +87,8 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
 
         if (fPriceDelta < 0) {
             holder.priceDeltaItem.setTextColor(colorRed);
-            percentDelta = - fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
-            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred  + percent;
+            percentDelta = -fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
+            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred + percent;
         } else {
             holder.priceDeltaItem.setTextColor(colorGreen);
             percentDelta = fPriceDelta * hundred / model.getPrice();
