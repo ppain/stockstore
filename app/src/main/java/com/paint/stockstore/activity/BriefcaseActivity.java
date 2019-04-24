@@ -152,7 +152,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void getInfo(){
-        if(isRelevanceCache() || !Utils.isNetworkAvailable(getApplicationContext())){
+        if(Utils.isRelevanceCache() || !Utils.isNetworkAvailable(getApplicationContext())){
             getFromCache();
         } else {
             getFromNetwork();
@@ -194,13 +194,6 @@ public class BriefcaseActivity extends AppCompatActivity {
                         },
                         throwable -> Utils.showMessage(throwable.toString(), getApplicationContext())
                 );
-    }
-
-
-    private boolean isRelevanceCache(){
-        Long minToLife = TimeUnit.MINUTES.toMillis(5L);
-        Long diff = System.currentTimeMillis() - Utils.getTime();
-        return (diff - minToLife < 0);
     }
 
 

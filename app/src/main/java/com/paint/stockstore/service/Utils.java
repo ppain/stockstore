@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import com.paint.stockstore.model.AccessToken;
 
+import java.util.concurrent.TimeUnit;
+
 
 public class Utils {
 
@@ -61,6 +63,12 @@ public class Utils {
 
     public static void setTime(){
         saveStore(TIMESTAMP, String.valueOf(System.currentTimeMillis()));
+    }
+
+    public static boolean isRelevanceCache(){
+        Long minToLife = TimeUnit.MINUTES.toMillis(5L);
+        Long diff = System.currentTimeMillis() - getTime();
+        return (diff - minToLife < 0);
     }
 
 
