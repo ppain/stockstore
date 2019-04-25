@@ -101,6 +101,17 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
 
+    private void checkOnEndList(PageOfTransactions pageOfTransactions) {
+        nextItemId = pageOfTransactions.getNextItemId();
+        if (adapterHistory.isContainsId(nextItemId)) {
+            showProgress(false);
+        } else {
+            setList(pageOfTransactions.getItems());
+            isLoaded = false;
+        }
+    }
+
+
     private void requestHistory(String token, int itemId) {
         RetrofitService.getInstance()
                 .getApi()
@@ -111,9 +122,7 @@ public class HistoryActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         PageOfTransactions body = response.body();
                         if (statusCode == 200 && body != null) {
-                            nextItemId = body.getNextItemId();
-                            setList(body.getItems());
-                            isLoaded = false;
+                            checkOnEndList(body);
                         } else {
                             Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
                             showProgress(false);

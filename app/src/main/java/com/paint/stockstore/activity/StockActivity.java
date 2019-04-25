@@ -155,6 +155,17 @@ public class StockActivity extends AppCompatActivity {
     }
 
 
+    private void checkOnEndList(PageOfStocks pageOfStocks) {
+        nextItemId = pageOfStocks.getNextItemId();
+        if (adapterStock.isContainsId(nextItemId)) {
+            swipeRefreshLayout.setRefreshing(false);
+        } else {
+            setList(pageOfStocks.getItems());
+            isLoaded = false;
+        }
+    }
+
+
     public void showBuyStockFragment(String stockId, String name) {
 
         BuyStockFragment buyStockFragment = BuyStockFragment.newInstance();
@@ -178,9 +189,7 @@ public class StockActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         PageOfStocks body = response.body();
                         if (statusCode == 200 && body != null) {
-                            nextItemId = body.getNextItemId();
-                            setList(body.getItems());
-                            isLoaded = false;
+                            checkOnEndList(body);
                         } else {
                             Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
                             swipeRefreshLayout.setRefreshing(false);
