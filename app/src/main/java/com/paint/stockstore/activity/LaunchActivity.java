@@ -16,16 +16,14 @@ public class LaunchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_launch);
 
         final Handler handler = new Handler();
-        handler.postDelayed(this::testAndStart, 1000);
+        handler.postDelayed(this::start, 1000);
     }
 
-    //todo rename
-    private void testAndStart() {
+    private void start() {
         if (Utils.getToken().isEmpty()) {
             startActivity(new Intent(this, LoginActivity.class));
         } else {
             startActivity(new Intent(this, BriefcaseActivity.class));
-
         }
 
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);

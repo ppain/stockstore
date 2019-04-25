@@ -2,9 +2,9 @@
 <LinearLayout android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="56dp"
-    android:paddingLeft="24dp"
-    android:paddingRight="24dp"
+    android:paddingTop="@dimen/dp_56"
+    android:paddingLeft="@dimen/dp_24"
+    android:paddingRight="@dimen/dp_24"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ProgressBar
@@ -16,29 +16,29 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_40"
         android:text="@string/login"/>
 
     <EditText
         android:id="@+id/textLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:ems="10"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:ems="@string/ten"
         android:inputType="" android:singleLine="true" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/password"
-        android:layout_marginLeft="8dp" />
+        android:layout_marginStart="@dimen/dp_8" />
 
     <EditText
         android:id="@+id/textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:ems="10"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:ems="@string/ten"
         android:inputType="textPassword"
         android:singleLine="true" />
 
@@ -46,6 +46,6 @@
         android:id="@+id/buttonAuth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="@dimen/dp_8"
         android:enabled="false" />
 </LinearLayout>

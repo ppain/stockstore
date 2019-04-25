@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -34,8 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button buttonLogin;
     private ProgressBar progressBar;
 
-    Observable<Boolean> observable;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,13 +50,15 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin = (Button) findViewById(R.id.buttonAuth);
         progressBar = findViewById(R.id.progressBar);
 
-        showProgress(false);
+        isLoading(false);
 
         buttonLogin.setText(R.string.sigin);
 
         buttonLogin.setOnClickListener((v) -> {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
-                requestSignIn();
+                isLoading(true);
+                User user = new User(textLogin.getText().toString(), textPassword.getText().toString());
+                requestSignIn(user);
             }
         });
 
@@ -67,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         Observable<String> nameObservable = RxTextView.textChanges(textLogin).skip(2).map(CharSequence::toString);
         Observable<String> passwordObservable = RxTextView.textChanges(textPassword).skip(2).map(CharSequence::toString);
 
-        observable = Observable.combineLatest(nameObservable, passwordObservable, this::validate);
+        Observable<Boolean> observable = Observable.combineLatest(nameObservable, passwordObservable, this::validate);
 
         observable.subscribe(new DisposableObserver<Boolean>() {
             @Override
@@ -92,19 +93,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void requestSignIn() {
-
-        showProgress(true);
-
-        User user = new User(textLogin.getText().toString(), textPassword.getText().toString());
-
+    public void requestSignIn(User user) {
         RetrofitService.getInstance()
                 .getApi()
                 .postLogin(user)
                 .enqueue(new Callback<AccessToken>() {
                     @Override
                     public void onResponse(@NonNull Call<AccessToken> call, @NonNull Response<AccessToken> response) {
-                        showProgress(false);
+                        isLoading(false);
                         int statusCode = response.code();
                         if (statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
@@ -125,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(@NonNull Call<AccessToken> call, @NonNull Throwable t) {
-                        showProgress(false);
+                        isLoading(false);
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
@@ -158,7 +154,15 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(new Intent(this, BriefcaseActivity.class));
     }
 
-    private void showProgress(boolean visible) {
-        progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+
+    private void isLoading(boolean state) {
+        if (state) {
+            progressBar.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 }

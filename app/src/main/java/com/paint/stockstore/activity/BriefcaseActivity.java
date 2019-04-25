@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -113,23 +114,21 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     public void forcedUpdate() {
         if (Utils.isNetworkAvailable(getApplicationContext())) {
-            swipeRefreshLayout.setRefreshing(true);
+            isLoading(true);
             requestInfo(Utils.getToken());
         } else {
-            swipeRefreshLayout.setRefreshing(false);
+            isLoading(false);
         }
     }
 
 
     public void showSellStockFragment(String stockId, String name, int count) {
         SellStockFragment sellStockFragment = SellStockFragment.newInstance();
-
         Bundle bundle = new Bundle();
         bundle.putString(getString(R.string.txt_stock_id), stockId);
         bundle.putString(getString(R.string.txt_name), name);
         bundle.putInt(getString(R.string.txt_count), count);
         sellStockFragment.setArguments(bundle);
-
         sellStockFragment.show(getSupportFragmentManager(), getResources().getString(R.string.tag_sell_fragment));
     }
 
@@ -142,7 +141,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     private void setList(List<InfoStock> listInfoStock) {
         adapterBriefcase.swapList(listInfoStock);
-        swipeRefreshLayout.setRefreshing(false);
+        isLoading(false);
     }
 
 
@@ -219,10 +218,9 @@ public class BriefcaseActivity extends AppCompatActivity {
                 .enqueue(new Callback<AccountInfo>() {
                     @Override
                     public void onResponse(@NonNull Call<AccountInfo> call, @NonNull Response<AccountInfo> response) {
-                        swipeRefreshLayout.setRefreshing(false);
+                        isLoading(false);
                         int statusCode = response.code();
                         if (statusCode == 200 && response.body() != null) {
-
                             setData(response.body());
                         } else if (statusCode == 403) {
                             getNewToken();
@@ -233,7 +231,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(@NonNull Call<AccountInfo> call, @NonNull Throwable t) {
-                        swipeRefreshLayout.setRefreshing(false);
+                        isLoading(false);
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
@@ -251,7 +249,6 @@ public class BriefcaseActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         if (statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
-
                             getInfo();
                         } else if (statusCode == 401) {
                             renewRefreshToken();
@@ -269,5 +266,14 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     private void renewRefreshToken() {
         startActivity(new Intent(this, LoginActivity.class));
+    }
+
+    public void isLoading(boolean state) {
+        swipeRefreshLayout.setRefreshing(state);
+        if (state) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 }

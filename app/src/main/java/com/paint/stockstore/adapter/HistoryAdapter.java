@@ -94,27 +94,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     }
 
 
-    public boolean isContainsId(int itemId) {
-        for (TransactionHistoryRecord item : data) {
-            if (item.getTransactionId() == itemId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public void updateList(List<TransactionHistoryRecord> list) {
         data.addAll(list);
 
         if (data != null) {
             notifyDataSetChanged();
-        }
-    }
-
-    public void clearList() {
-        if (data != null) {
-            data.clear();
         }
     }
 }

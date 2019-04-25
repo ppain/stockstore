@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="@dimen/dp_100"
     android:background="?android:attr/selectableItemBackground"
     android:id="@+id/item_stock">
 
     <ImageView
         android:id="@+id/im_iconUrl_item"
-        android:padding="8dp"
-        android:layout_width="64dp"
+        android:padding="@dimen/dp_8"
+        android:layout_width="@dimen/dp_64"
         android:layout_height="match_parent"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -24,13 +24,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorBlack"
-            android:textSize="20sp" />
+            android:textSize="@dimen/sp_20" />
 
         <TextView
             android:id="@+id/tv_count_code_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13sp" />
+            android:textSize="@dimen/sp_13" />
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -45,12 +45,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorBlack"
-            android:textSize="20sp" />
+            android:textSize="@dimen/sp_20" />
 
         <TextView
             android:id="@+id/tv_priceDelta_date_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13sp" />
+            android:textSize="@dimen/sp_13" />
     </LinearLayout>
 </LinearLayout>

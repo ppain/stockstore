@@ -41,7 +41,7 @@ public class SellStockFragment extends BottomSheetDialogFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.bs_dialog, container, false);
+        View view = inflater.inflate(R.layout.fragment_bs_dialog, container, false);
         Button buttonBuy = (Button) view.findViewById(R.id.buttonDialog);
 
         Bundle bundle = getArguments();
@@ -58,6 +58,7 @@ public class SellStockFragment extends BottomSheetDialogFragment {
             String amount = textAmount.getText().toString();
 
             if (validate(amount, count)) {
+                isLoading(true);
                 Transaction transaction = new Transaction(stockId, amount);
                 requestSell(transaction, Utils.getToken());
             } else {
@@ -95,7 +96,12 @@ public class SellStockFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onFailure(@NonNull Call<JSONObject> call, @NonNull Throwable t) {
                         Utils.showMessage(t.toString(), getActivity());
+                        isLoading(false);
                     }
                 });
+    }
+
+    private void isLoading(boolean state) {
+        ((BriefcaseActivity) Objects.requireNonNull(getActivity())).isLoading(state);
     }
 }

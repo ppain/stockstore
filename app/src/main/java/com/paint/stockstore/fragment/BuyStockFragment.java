@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.paint.stockstore.R;
+import com.paint.stockstore.activity.StockActivity;
 import com.paint.stockstore.model.Transaction;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.Utils;
@@ -38,7 +39,7 @@ public class BuyStockFragment extends BottomSheetDialogFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.bs_dialog, container, false);
+        View view = inflater.inflate(R.layout.fragment_bs_dialog, container, false);
         Button buttonBuy = (Button) view.findViewById(R.id.buttonDialog);
 
         Bundle bundle = getArguments();
@@ -54,6 +55,7 @@ public class BuyStockFragment extends BottomSheetDialogFragment {
             String amount = textAmount.getText().toString();
 
             if (validate(amount)) {
+                isLoading(true);
                 Transaction transaction = new Transaction(stockId, amount);
                 requestBuy(transaction, Utils.getToken());
             } else {
@@ -90,7 +92,12 @@ public class BuyStockFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onFailure(@NonNull Call<JSONObject> call, @NonNull Throwable t) {
                         Utils.showMessage(t.toString(), getActivity());
+                        isLoading(false);
                     }
                 });
+    }
+
+    private void isLoading(boolean state) {
+        ((StockActivity) Objects.requireNonNull(getActivity())).isLoading(state);
     }
 }

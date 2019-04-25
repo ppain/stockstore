@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.StockAdapter;
@@ -68,7 +69,10 @@ public class StockActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_stock);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> initClearRequest(""));
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            isLoading(true);
+            initClearRequest("");
+        });
     }
 
     @SuppressLint("CheckResult")
@@ -117,7 +121,7 @@ public class StockActivity extends AppCompatActivity {
 
 
     void initClearRequest(String query) {
-        swipeRefreshLayout.setRefreshing(true);
+        isLoading(true);
         nextItemId = Utils.ITEM_ID_DEFAULT;
         adapterStock.clearList();
         requestStock(query, nextItemId);
@@ -138,9 +142,9 @@ public class StockActivity extends AppCompatActivity {
                     int lastVisibleItemPosition = llManager.findLastVisibleItemPosition();
                     Log.d("testing", "lastVisibleItemPosition: " + lastVisibleItemPosition
                             + ", adapterStock.getItemCount(): " + sizeList);
-                    if ((lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM) && !isLoaded) {
+                    if (!isLoaded && (lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM)) {
                         isLoaded = true;
-                        swipeRefreshLayout.setRefreshing(true);
+                        isLoading(true);
                         requestStock("", nextItemId);
                     }
                 }
@@ -151,31 +155,26 @@ public class StockActivity extends AppCompatActivity {
 
     private void setList(List<InfoStock> list) {
         adapterStock.updateList(list);
-        swipeRefreshLayout.setRefreshing(false);
+        isLoading(false);
+    }
+
+
+    public void showBuyStockFragment(String stockId, String name) {
+        BuyStockFragment buyStockFragment = BuyStockFragment.newInstance();
+        Bundle bundle = new Bundle();
+        bundle.putString(getString(R.string.txt_stock_id), stockId);
+        bundle.putString(getString(R.string.txt_name), name);
+        buyStockFragment.setArguments(bundle);
+        buyStockFragment.show(getSupportFragmentManager(), getResources().getString(R.string.tag_buy_fragment));
     }
 
 
     private void checkOnEndList(PageOfStocks pageOfStocks) {
         nextItemId = pageOfStocks.getNextItemId();
-        if (adapterStock.isContainsId(nextItemId)) {
-            swipeRefreshLayout.setRefreshing(false);
-        } else {
-            setList(pageOfStocks.getItems());
+        if (nextItemId != 0) {
             isLoaded = false;
         }
-    }
-
-
-    public void showBuyStockFragment(String stockId, String name) {
-
-        BuyStockFragment buyStockFragment = BuyStockFragment.newInstance();
-
-        Bundle bundle = new Bundle();
-        bundle.putString(getString(R.string.txt_stock_id), stockId);
-        bundle.putString(getString(R.string.txt_name), name);
-        buyStockFragment.setArguments(bundle);
-
-        buyStockFragment.show(getSupportFragmentManager(), getResources().getString(R.string.tag_buy_fragment));
+        setList(pageOfStocks.getItems());
     }
 
 
@@ -187,20 +186,29 @@ public class StockActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(@NonNull Call<PageOfStocks> call, @NonNull Response<PageOfStocks> response) {
                         int statusCode = response.code();
+                        isLoading(false);
                         PageOfStocks body = response.body();
                         if (statusCode == 200 && body != null) {
                             checkOnEndList(body);
                         } else {
                             Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
-                            swipeRefreshLayout.setRefreshing(false);
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<PageOfStocks> call, @NonNull Throwable t) {
-                        swipeRefreshLayout.setRefreshing(false);
+                        isLoading(false);
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
+    }
+
+    public void isLoading(boolean state) {
+        swipeRefreshLayout.setRefreshing(state);
+        if (state) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 }

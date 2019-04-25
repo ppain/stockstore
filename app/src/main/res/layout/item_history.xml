@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="@dimen/dp_100"
     android:background="?android:attr/selectableItemBackground"
     android:id="@+id/item_stock">
 
 
     <View
         android:id="@+id/indicator"
-        android:layout_width="10dp"
+        android:layout_width="@dimen/dp_10"
         android:layout_height="wrap_content"/>
 
     <include layout="@layout/item_stock"/>

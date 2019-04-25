@@ -117,16 +117,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
     }
 
 
-    public boolean isContainsId(int itemId) {
-        for (InfoStock item : data) {
-            if (item.getId() == itemId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public void updateList(List<InfoStock> list) {
         data.addAll(list);
 

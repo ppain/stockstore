@@ -6,8 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import com.paint.stockstore.R;
@@ -56,7 +56,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progressBar);
 
-        showProgress(true);
+        isLoading(true);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -80,35 +80,29 @@ public class HistoryActivity extends AppCompatActivity {
                 if (dy > 0) {
                     int sizeList = adapterHistory.getItemCount();
                     int lastVisibleItemPosition = llManager.findLastVisibleItemPosition();
-                    Log.d("testing", "lastVisibleItemPosition: " + lastVisibleItemPosition
-                            + ", adapterStock.getItemCount(): " + sizeList);
-                    if ((lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM) && !isLoaded) {
+                    if (!isLoaded && (lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM)) {
                         isLoaded = true;
-                        showProgress(true);
+                        isLoading(true);
                         requestHistory(Utils.getToken(), nextItemId);
                     }
                 }
             }
         });
-
         requestHistory(Utils.getToken(), Utils.ITEM_ID_DEFAULT);
     }
 
 
     private void setList(List<TransactionHistoryRecord> items) {
         adapterHistory.updateList(items);
-        showProgress(false);
     }
 
 
     private void checkOnEndList(PageOfTransactions pageOfTransactions) {
         nextItemId = pageOfTransactions.getNextItemId();
-        if (adapterHistory.isContainsId(nextItemId)) {
-            showProgress(false);
-        } else {
-            setList(pageOfTransactions.getItems());
+        if (nextItemId != 0) {
             isLoaded = false;
         }
+        setList(pageOfTransactions.getItems());
     }
 
 
@@ -119,25 +113,32 @@ public class HistoryActivity extends AppCompatActivity {
                 .enqueue(new Callback<PageOfTransactions>() {
                     @Override
                     public void onResponse(@NonNull Call<PageOfTransactions> call, @NonNull Response<PageOfTransactions> response) {
+                        isLoading(false);
                         int statusCode = response.code();
                         PageOfTransactions body = response.body();
                         if (statusCode == 200 && body != null) {
                             checkOnEndList(body);
                         } else {
                             Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
-                            showProgress(false);
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<PageOfTransactions> call, @NonNull Throwable t) {
                         Utils.showMessage(t.toString(), getApplicationContext());
-                        showProgress(false);
+                        isLoading(false);
                     }
                 });
     }
 
-    private void showProgress(boolean visible) {
-        progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    private void isLoading(boolean state) {
+        if (state) {
+            progressBar.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -45,15 +46,16 @@ public class RegActivity extends AppCompatActivity {
         buttonReg = (Button) findViewById(R.id.buttonAuth);
         progressBar = findViewById(R.id.progressBar);
 
-        showProgress(false);
+        isLoading(false);
 
         buttonReg.setText(R.string.signup);
         buttonReg.setOnClickListener((v) -> {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
-                requestSignUp();
+                isLoading(true);
+                User user = new User(textLogin.getText().toString(), textPassword.getText().toString());
+                requestSignUp(user);
             }
         });
-
 
         Observable<String> nameObservable = RxTextView.textChanges(textLogin).skip(2).map(CharSequence::toString);
         Observable<String> passwordObservable = RxTextView.textChanges(textPassword).skip(2).map(CharSequence::toString);
@@ -83,12 +85,7 @@ public class RegActivity extends AppCompatActivity {
     }
 
 
-    public void requestSignUp() {
-
-        showProgress(true);
-
-        User user = new User(textLogin.getText().toString(), textPassword.getText().toString());
-
+    public void requestSignUp(User user) {
         RetrofitService.getInstance()
                 .getApi()
                 .postReg(user)
@@ -96,20 +93,18 @@ public class RegActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(@NonNull Call<AccessToken> call, @NonNull Response<AccessToken> response) {
                         int statusCode = response.code();
+                        isLoading(false);
                         if (statusCode == 200 && response.body() != null) {
                             Utils.setToken(response.body());
-
-                            showProgress(false);
                             onSuccessfulAuth();
                         } else {
-                            showProgress(false);
                             Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<AccessToken> call, @NonNull Throwable t) {
-                        showProgress(false);
+                        isLoading(false);
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
@@ -144,7 +139,14 @@ public class RegActivity extends AppCompatActivity {
     }
 
 
-    private void showProgress(boolean visible) {
-        progressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    private void isLoading(boolean state) {
+        if (state) {
+            progressBar.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 }
