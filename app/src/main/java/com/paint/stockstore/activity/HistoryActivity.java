@@ -17,6 +17,8 @@ import com.paint.stockstore.model.TransactionHistoryRecord;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.Utils;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -119,7 +121,12 @@ public class HistoryActivity extends AppCompatActivity {
                         if (statusCode == 200 && body != null) {
                             checkOnEndList(body);
                         } else {
-                            Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
+                            try {
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
+                                Utils.showMessage(jObjError.getString("message"), getApplicationContext());
+                            } catch (Exception e) {
+                                Utils.showMessage(e.toString(), getApplicationContext());
+                            }
                         }
                     }
 

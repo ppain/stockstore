@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +28,8 @@ import com.paint.stockstore.model.AccountModel;
 import com.paint.stockstore.service.App;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.Utils;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +49,13 @@ public class BriefcaseActivity extends AppCompatActivity {
     private BriefcaseAdapter adapterBriefcase;
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView tvName;
+    private TextView tvEmptyList;
     private BriefcaseDAO briefcaseDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_briefcase);
-
         init();
     }
 
@@ -68,20 +71,19 @@ public class BriefcaseActivity extends AppCompatActivity {
     void init() {
         ImageView buttonHistory = findViewById(R.id.button_history);
         ImageView buttonAccount = findViewById(R.id.button_account);
+        tvEmptyList = (TextView) findViewById(R.id.tv_empty_list);
+        tvName = (TextView) findViewById(R.id.tv_name_item);
         FloatingActionButton buttonStock = findViewById(R.id.fab_stock);
-
         buttonHistory.setOnClickListener((v) -> {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
                 startActivity(new Intent(this, HistoryActivity.class));
             }
         });
-
         buttonAccount.setOnClickListener((v) -> {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
                 startActivity(new Intent(this, LoginActivity.class));
             }
         });
-
         buttonStock.setOnClickListener((v) -> {
             if (Utils.isNetworkAvailable(getApplicationContext())) {
                 startActivity(new Intent(this, StockActivity.class));
@@ -91,8 +93,6 @@ public class BriefcaseActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_briefcase));
         collapsingToolbar = findViewById(R.id.collapsingToolbarLayout);
         collapsingToolbar.setTitle(getString(R.string.default_balance) + getString(R.string.rub));
-
-        tvName = (TextView) findViewById(R.id.tv_name_item);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_briefcase);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
@@ -140,8 +140,20 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void setList(List<InfoStock> listInfoStock) {
+        hideEmptyList(listInfoStock.isEmpty());
         adapterBriefcase.swapList(listInfoStock);
         isLoading(false);
+    }
+
+
+    private void hideEmptyList(boolean empty) {
+        if (empty) {
+            swipeRefreshLayout.setVisibility(View.INVISIBLE);
+            tvEmptyList.setVisibility(View.VISIBLE);
+        } else {
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            tvEmptyList.setVisibility(View.INVISIBLE);
+        }
     }
 
 
@@ -195,6 +207,7 @@ public class BriefcaseActivity extends AppCompatActivity {
         requestToken(Utils.getToken(), new RefreshToken(Utils.getRefreshToken()));
     }
 
+
     @SuppressLint("CheckResult")
     private void setData(AccountInfo accountInfo) {
         setInfo(accountInfo.getName(), accountInfo.getBalance());
@@ -209,9 +222,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                 );
     }
 
-
     private void requestInfo(String token) {
-
         RetrofitService.getInstance()
                 .getApi()
                 .getAccountInfo(token)
@@ -225,7 +236,12 @@ public class BriefcaseActivity extends AppCompatActivity {
                         } else if (statusCode == 403) {
                             getNewToken();
                         } else {
-                            Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
+                            try {
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
+                                Utils.showMessage(jObjError.getString("message"), getApplicationContext());
+                            } catch (Exception e) {
+                                Utils.showMessage(e.toString(), getApplicationContext());
+                            }
                         }
                     }
 
@@ -238,7 +254,6 @@ public class BriefcaseActivity extends AppCompatActivity {
     }
 
     private void requestToken(String token, RefreshToken refreshToken) {
-
         RetrofitService.getInstance()
                 .getApi()
                 .refreshAccessToken(token, refreshToken)
@@ -253,7 +268,12 @@ public class BriefcaseActivity extends AppCompatActivity {
                         } else if (statusCode == 401) {
                             renewRefreshToken();
                         } else {
-                            Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
+                            try {
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
+                                Utils.showMessage(jObjError.getString("message"), getApplicationContext());
+                            } catch (Exception e) {
+                                Utils.showMessage(e.toString(), getApplicationContext());
+                            }
                         }
                     }
 

@@ -86,7 +86,12 @@ public class BuyStockFragment extends BottomSheetDialogFragment {
                             Utils.showMessage(getResources().getString(R.string.paid), getActivity());
                             onDestroyView();
                         } else {
-                            Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getActivity());
+                            try {
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
+                                Utils.showMessage(jObjError.getString("message"), getActivity());
+                            } catch (Exception e) {
+                                Utils.showMessage(e.toString(), getActivity());
+                            }
                         }
                     }
 

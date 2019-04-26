@@ -108,8 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                             onSuccessfulAuth();
                         } else if (statusCode == 401) {
                             try {
-                                assert response.errorBody() != null;
-                                JSONObject jObjError = new JSONObject(response.errorBody().string());
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
                                 Utils.showMessage(jObjError.getString("message"), getApplicationContext());
                             } catch (Exception e) {
                                 Utils.showMessage(e.toString(), getApplicationContext());

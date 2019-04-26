@@ -17,6 +17,8 @@ import com.paint.stockstore.model.User;
 import com.paint.stockstore.service.Utils;
 import com.paint.stockstore.service.RetrofitService;
 
+import org.json.JSONObject;
+
 import java.util.Objects;
 
 import io.reactivex.Observable;
@@ -98,7 +100,12 @@ public class RegActivity extends AppCompatActivity {
                             Utils.setToken(response.body());
                             onSuccessfulAuth();
                         } else {
-                            Utils.showMessage(Objects.requireNonNull(response.errorBody()).source().toString(), getApplicationContext());
+                            try {
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
+                                Utils.showMessage(jObjError.getString("message"), getApplicationContext());
+                            } catch (Exception e) {
+                                Utils.showMessage(e.toString(), getApplicationContext());
+                            }
                         }
                     }
 
