@@ -84,6 +84,7 @@ public class SellStockFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onResponse(@NonNull Call<JSONObject> call, @NonNull Response<JSONObject> response) {
                         int statusCode = response.code();
+                        isLoading(false);
                         if (statusCode == 200) {
                             ((BriefcaseActivity) Objects.requireNonNull(getActivity())).forcedUpdate();
                             Utils.showMessage(getResources().getString(R.string.sale), getActivity());

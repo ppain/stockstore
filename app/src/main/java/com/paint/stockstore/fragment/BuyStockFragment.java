@@ -80,6 +80,7 @@ public class BuyStockFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onResponse(@NonNull Call<JSONObject> call, @NonNull Response<JSONObject> response) {
                         int statusCode = response.code();
+                        isLoading(false);
                         if (statusCode == 200) {
                             Utils.setFlagUpdate(true);
                             Utils.showMessage(getResources().getString(R.string.paid), getActivity());
