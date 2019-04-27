@@ -3,6 +3,7 @@ package com.paint.stockstore.activity;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,8 +20,10 @@ import android.view.WindowManager;
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.StockAdapter;
 import com.paint.stockstore.fragment.BuyStockFragment;
+import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.InfoStock;
 import com.paint.stockstore.model.PageOfStocks;
+import com.paint.stockstore.model.RefreshToken;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.RxSearchObservable;
 import com.paint.stockstore.service.Utils;
@@ -192,6 +195,8 @@ public class StockActivity extends AppCompatActivity {
                         PageOfStocks body = response.body();
                         if (statusCode == 200 && body != null) {
                             checkOnEndList(new PageOfStocks(body));
+                        } else if (statusCode == 403) {
+                            requestToken(Utils.getToken(), new RefreshToken(Utils.getRefreshToken()));
                         } else {
                             try {
                                 JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
@@ -208,6 +213,41 @@ public class StockActivity extends AppCompatActivity {
                         Utils.showMessage(t.toString(), getApplicationContext());
                     }
                 });
+    }
+
+    private void requestToken(String token, RefreshToken refreshToken) {
+        RetrofitService.getInstance()
+                .getApi()
+                .refreshAccessToken(token, refreshToken)
+                .enqueue(new Callback<AccessToken>() {
+
+                    @Override
+                    public void onResponse(@NonNull Call<AccessToken> call, @NonNull Response<AccessToken> response) {
+                        int statusCode = response.code();
+                        if (statusCode == 200 && response.body() != null) {
+                            Utils.setToken(response.body());
+                            initClearRequest("");
+                        } else if (statusCode == 401) {
+                            renewRefreshToken();
+                        } else {
+                            try {
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
+                                Utils.showMessage(jObjError.getString("message"), getApplicationContext());
+                            } catch (Exception e) {
+                                Utils.showMessage(e.toString(), getApplicationContext());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<AccessToken> call, @NonNull Throwable t) {
+                        Utils.showMessage(t.toString(), getApplicationContext());
+                    }
+                });
+    }
+
+    private void renewRefreshToken() {
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     public void isLoading(boolean state) {

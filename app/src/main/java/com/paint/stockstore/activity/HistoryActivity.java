@@ -1,5 +1,6 @@
 package com.paint.stockstore.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,9 @@ import android.widget.ProgressBar;
 
 import com.paint.stockstore.R;
 import com.paint.stockstore.adapter.HistoryAdapter;
+import com.paint.stockstore.model.AccessToken;
 import com.paint.stockstore.model.PageOfTransactions;
+import com.paint.stockstore.model.RefreshToken;
 import com.paint.stockstore.model.TransactionHistoryRecord;
 import com.paint.stockstore.service.RetrofitService;
 import com.paint.stockstore.service.Utils;
@@ -120,6 +123,8 @@ public class HistoryActivity extends AppCompatActivity {
                         PageOfTransactions body = response.body();
                         if (statusCode == 200 && body != null) {
                             checkOnEndList(new PageOfTransactions(body));
+                        } else if (statusCode == 403) {
+                            requestToken(Utils.getToken(), new RefreshToken(Utils.getRefreshToken()));
                         } else {
                             try {
                                 JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
@@ -136,6 +141,41 @@ public class HistoryActivity extends AppCompatActivity {
                         isLoading(false);
                     }
                 });
+    }
+
+    private void requestToken(String token, RefreshToken refreshToken) {
+        RetrofitService.getInstance()
+                .getApi()
+                .refreshAccessToken(token, refreshToken)
+                .enqueue(new Callback<AccessToken>() {
+
+                    @Override
+                    public void onResponse(@NonNull Call<AccessToken> call, @NonNull Response<AccessToken> response) {
+                        int statusCode = response.code();
+                        if (statusCode == 200 && response.body() != null) {
+                            Utils.setToken(response.body());
+                            requestHistory(Utils.getToken(), Utils.ITEM_ID_DEFAULT);
+                        } else if (statusCode == 401) {
+                            renewRefreshToken();
+                        } else {
+                            try {
+                                JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
+                                Utils.showMessage(jObjError.getString("message"), getApplicationContext());
+                            } catch (Exception e) {
+                                Utils.showMessage(e.toString(), getApplicationContext());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<AccessToken> call, @NonNull Throwable t) {
+                        Utils.showMessage(t.toString(), getApplicationContext());
+                    }
+                });
+    }
+
+    private void renewRefreshToken() {
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     private void isLoading(boolean state) {
