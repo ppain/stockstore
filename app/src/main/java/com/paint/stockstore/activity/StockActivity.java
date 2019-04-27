@@ -126,10 +126,14 @@ public class StockActivity extends AppCompatActivity {
 
 
     void initClearRequest(String query) {
-        isLoading(true);
-        nextItemId = Utils.ITEM_ID_DEFAULT;
-        adapterStock.clearList();
-        requestStock(query, nextItemId);
+        if (Utils.isNetworkAvailable(getApplicationContext())) {
+            isLoading(true);
+            nextItemId = Utils.ITEM_ID_DEFAULT;
+            adapterStock.clearList();
+            requestStock(query, nextItemId);
+        } else {
+            isLoading(false);
+        }
     }
 
 
@@ -147,7 +151,8 @@ public class StockActivity extends AppCompatActivity {
                     int lastVisibleItemPosition = llManager.findLastVisibleItemPosition();
                     Log.d("testing", "lastVisibleItemPosition: " + lastVisibleItemPosition
                             + ", adapterStock.getItemCount(): " + sizeList);
-                    if (!isLoaded && (lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM)) {
+                    if (!isLoaded && (lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM
+                             && Utils.isNetworkAvailable(getApplicationContext()))) {
                         isLoaded = true;
                         isLoading(true);
                         requestStock("", nextItemId);
