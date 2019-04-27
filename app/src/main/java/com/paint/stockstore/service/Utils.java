@@ -23,6 +23,7 @@ public class Utils {
 
     private static boolean FLAG_UPDATE = false;
 
+    public static final float hundred = 100f;
     public static final int COUNT_DEFAULT = 10;
     public static final int ITEM_ID_DEFAULT = 1;
     public static final int HIDE_ITEM = 5;
@@ -119,5 +120,13 @@ public class Utils {
             setErrorPassword = "от 8 до 64 символов";
         }
         return setErrorPassword;
+    }
+
+    public static String roundToString(float number) {
+        return String.valueOf(Math.round(number * hundred) / hundred);
+    }
+
+    public static float roundToFloat(float number) {
+        return Math.round(number * hundred) / hundred;
     }
 }

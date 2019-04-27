@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.InfoStock;
+import com.paint.stockstore.service.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,22 +73,23 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
         String rub = context.getString(R.string.rub);
         String ruble = context.getString(R.string.ruble);
         String percent = context.getString(R.string.percent);
-        float hundred = 100f;
+        String space_bar = context.getString(R.string.space_bar);
         int colorRed = ContextCompat.getColor(context, R.color.colorRed);
         int colorGreen = ContextCompat.getColor(context, R.color.colorGreen);
 
-        float fPriceDelta = Math.round(model.getPriceDelta() * hundred) / hundred;
+        float fPriceDelta = model.getPriceDelta();
 
-        String price = String.valueOf(Math.round(model.getPrice() * hundred) / hundred) + rub;
+        String price = model.getPrice() + space_bar + rub;
 
+//        Calculate interest
         if (fPriceDelta < 0) {
             holder.priceDeltaItem.setTextColor(colorRed);
-            percentDelta = -fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
-            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred + percent;
+            percentDelta = -fPriceDelta * Utils.hundred / (model.getPrice() - fPriceDelta);
+            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Utils.roundToString(percentDelta) + percent;
         } else {
             holder.priceDeltaItem.setTextColor(colorGreen);
-            percentDelta = fPriceDelta * hundred / model.getPrice();
-            priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Math.round(percentDelta * hundred) / hundred + percent;
+            percentDelta = fPriceDelta * Utils.hundred / model.getPrice();
+            priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Utils.roundToString(percentDelta) + percent;
         }
 
         Glide.with(holder.itemView.getContext())
@@ -101,7 +103,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
         holder.nameItem.setText(model.getName());
         holder.priceItem.setText(price);
         holder.priceDeltaItem.setText(priceDelta);
-        holder.codeItem.setText(String.valueOf(model.getCode()));
+        holder.codeItem.setText(model.getCode());
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override

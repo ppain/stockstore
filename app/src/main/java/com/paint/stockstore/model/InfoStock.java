@@ -6,6 +6,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
+import com.paint.stockstore.service.Utils;
 
 @Entity
 public class InfoStock {
@@ -47,6 +48,16 @@ public class InfoStock {
         this.price = price;
         this.priceDelta = priceDelta;
         this.count = count;
+    }
+
+    public InfoStock(InfoStock infoStock) {
+        this.id = infoStock.getId();
+        this.code = infoStock.getCode();
+        this.name = infoStock.getName();
+        this.iconUrl = infoStock.getIconUrl();
+        this.price = Utils.roundToFloat(infoStock.getPrice());
+        this.priceDelta = Utils.roundToFloat(infoStock.getPriceDelta());
+        this.count = infoStock.getCount();
     }
 
     public Long getId() {

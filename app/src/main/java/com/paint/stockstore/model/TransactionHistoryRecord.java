@@ -1,6 +1,14 @@
 package com.paint.stockstore.model;
 
+import android.annotation.SuppressLint;
+
 import com.google.gson.annotations.SerializedName;
+import com.paint.stockstore.service.Utils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class TransactionHistoryRecord {
     @SerializedName("transactionId")
@@ -29,6 +37,15 @@ public class TransactionHistoryRecord {
         this.totalPrice = totalPrice;
         this.date = date;
         this.type = type;
+    }
+
+    TransactionHistoryRecord(TransactionHistoryRecord transactionHistoryRecord) {
+        this.transactionId = transactionHistoryRecord.getTransactionId();
+        this.stock = transactionHistoryRecord.getStock();
+        this.amount = transactionHistoryRecord.getAmount();
+        this.totalPrice = Utils.roundToFloat(transactionHistoryRecord.getTotalPrice());
+        this.date = formatDate(transactionHistoryRecord.getDate());
+        this.type = transactionHistoryRecord.getType();
     }
 
     public int getTransactionId() {
@@ -77,6 +94,19 @@ public class TransactionHistoryRecord {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    private String formatDate(String oldDate) {
+        String newDate;
+        try {
+            @SuppressLint("SimpleDateFormat") Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(oldDate);
+            newDate = String.valueOf(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", new Locale("ru")).format(date));
+
+        } catch (ParseException e) {
+            newDate = oldDate.replace("-", ".").replace("T", " ")
+                    .substring(0, 19);
+        }
+        return newDate;
     }
 
 }

@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.paint.stockstore.R;
 import com.paint.stockstore.model.InfoStock;
+import com.paint.stockstore.service.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,25 +75,24 @@ public class BriefcaseAdapter extends RecyclerView.Adapter<BriefcaseAdapter.Brie
         String ruble = context.getString(R.string.ruble);
         String percent = context.getString(R.string.percent);
         String amount = context.getString(R.string.amount);
-        float hundred = 100f;
+        String space_bar = context.getString(R.string.space_bar);
         int colorRed = ContextCompat.getColor(context, R.color.colorRed);
         int colorGreen = ContextCompat.getColor(context, R.color.colorGreen);
 
+        float PriceDelta = model.getPriceDelta();
 
-        float fPriceDelta = Math.round(model.getPriceDelta() * hundred) / hundred;
+        String price = model.getPrice() + space_bar + rub;
+        String count = model.getCount() + amount;
 
-        String price = String.valueOf(Math.round(model.getPrice() * hundred) / hundred) + rub;
-        String count = String.valueOf(model.getCount()) + amount;
-
-
-        if (fPriceDelta < 0) {
+//        Calculate interest
+        if (PriceDelta < 0) {
             holder.priceDeltaItem.setTextColor(colorRed);
-            percentDelta = -fPriceDelta * hundred / (model.getPrice() - fPriceDelta);
-            priceDelta = context.getString(R.string.arrow_down) + Math.abs(fPriceDelta) + ruble + Math.round(percentDelta * hundred) / hundred + percent;
+            percentDelta = -PriceDelta * Utils.hundred / (model.getPrice() - PriceDelta);
+            priceDelta = context.getString(R.string.arrow_down) + Math.abs(PriceDelta) + ruble + Utils.roundToString(percentDelta) + percent;
         } else {
             holder.priceDeltaItem.setTextColor(colorGreen);
-            percentDelta = fPriceDelta * hundred / model.getPrice();
-            priceDelta = context.getString(R.string.arrow_up) + fPriceDelta + ruble + Math.round(percentDelta * hundred) / hundred + percent;
+            percentDelta = PriceDelta * Utils.hundred / model.getPrice();
+            priceDelta = context.getString(R.string.arrow_up) + PriceDelta + ruble + Utils.roundToString(percentDelta) + percent;
         }
 
         Glide.with(holder.itemView.getContext())

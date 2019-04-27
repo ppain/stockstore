@@ -191,7 +191,7 @@ public class StockActivity extends AppCompatActivity {
                         isLoading(false);
                         PageOfStocks body = response.body();
                         if (statusCode == 200 && body != null) {
-                            checkOnEndList(body);
+                            checkOnEndList(new PageOfStocks(body));
                         } else {
                             try {
                                 JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());

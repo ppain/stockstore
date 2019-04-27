@@ -2,6 +2,7 @@ package com.paint.stockstore.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PageOfStocks {
@@ -19,6 +20,16 @@ public class PageOfStocks {
         this.nextItemId = nextItemId;
         this.prevItemId = prevItemId;
         this.items = items;
+    }
+
+    public PageOfStocks(PageOfStocks pageOfStocks) {
+        List<InfoStock> listInfoStock = new ArrayList<>();
+        for (InfoStock stock : pageOfStocks.getItems()) {
+            listInfoStock.add(new InfoStock(stock));
+        }
+        this.nextItemId = pageOfStocks.getNextItemId();
+        this.prevItemId = pageOfStocks.getPrevItemId();
+        this.items = listInfoStock;
     }
 
     public int getNextItemId() {

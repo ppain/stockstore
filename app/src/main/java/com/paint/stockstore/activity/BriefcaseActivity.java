@@ -92,7 +92,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_briefcase));
         collapsingToolbar = findViewById(R.id.collapsingToolbarLayout);
-        collapsingToolbar.setTitle(getString(R.string.default_balance) + getString(R.string.rub));
+        collapsingToolbar.setTitle(getString(R.string.default_balance) + getString(R.string.space_bar) + getString(R.string.rub));
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_briefcase);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
@@ -134,7 +134,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
 
     private void setInfo(String name, float balance) {
-        collapsingToolbar.setTitle(String.valueOf(Math.round(balance * 100f) / 100f) + getString(R.string.rub));
+        collapsingToolbar.setTitle(balance + getString(R.string.space_bar) + getString(R.string.rub));
         tvName.setText(name);
     }
 
@@ -172,7 +172,6 @@ public class BriefcaseActivity extends AppCompatActivity {
         }
     }
 
-
     @SuppressLint("CheckResult")
     private void getFromCache() {
         Single<List<InfoStock>> stock = briefcaseDao.getRxStock();
@@ -207,7 +206,6 @@ public class BriefcaseActivity extends AppCompatActivity {
         requestToken(Utils.getToken(), new RefreshToken(Utils.getRefreshToken()));
     }
 
-
     @SuppressLint("CheckResult")
     private void setData(AccountInfo accountInfo) {
         setInfo(accountInfo.getName(), accountInfo.getBalance());
@@ -222,6 +220,7 @@ public class BriefcaseActivity extends AppCompatActivity {
                 );
     }
 
+
     private void requestInfo(String token) {
         RetrofitService.getInstance()
                 .getApi()
@@ -231,8 +230,9 @@ public class BriefcaseActivity extends AppCompatActivity {
                     public void onResponse(@NonNull Call<AccountInfo> call, @NonNull Response<AccountInfo> response) {
                         isLoading(false);
                         int statusCode = response.code();
-                        if (statusCode == 200 && response.body() != null) {
-                            setData(response.body());
+                        AccountInfo body = response.body();
+                        if (statusCode == 200 && body != null) {
+                            setData(new AccountInfo(body));
                         } else if (statusCode == 403) {
                             getNewToken();
                         } else {

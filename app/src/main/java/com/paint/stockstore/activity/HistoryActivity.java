@@ -119,7 +119,7 @@ public class HistoryActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         PageOfTransactions body = response.body();
                         if (statusCode == 200 && body != null) {
-                            checkOnEndList(body);
+                            checkOnEndList(new PageOfTransactions(body));
                         } else {
                             try {
                                 JSONObject jObjError = new JSONObject(Objects.requireNonNull(response.errorBody()).string());
