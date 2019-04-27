@@ -150,6 +150,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void onSuccessfulAuth() {
+        Utils.setFlagUpdate(true);
         startActivity(new Intent(this, BriefcaseActivity.class));
     }
 

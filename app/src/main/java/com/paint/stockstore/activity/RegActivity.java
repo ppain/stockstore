@@ -142,6 +142,7 @@ public class RegActivity extends AppCompatActivity {
 
 
     private void onSuccessfulAuth() {
+        Utils.setFlagUpdate(true);
         startActivity(new Intent(this, BriefcaseActivity.class));
     }
 
