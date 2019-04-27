@@ -1,7 +1,5 @@
 package com.paint.stockstore.model;
 
-import android.annotation.SuppressLint;
-
 import com.google.gson.annotations.SerializedName;
 import com.paint.stockstore.service.Utils;
 
@@ -9,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class TransactionHistoryRecord {
     @SerializedName("transactionId")
@@ -29,6 +28,7 @@ public class TransactionHistoryRecord {
     @SerializedName("type")
     private String type;
 
+
     public TransactionHistoryRecord(int transactionId, InfoStock stock, int amount, float totalPrice,
                                     String date, String type) {
         this.transactionId = transactionId;
@@ -47,6 +47,7 @@ public class TransactionHistoryRecord {
         this.date = formatDate(transactionHistoryRecord.getDate());
         this.type = transactionHistoryRecord.getType();
     }
+
 
     public int getTransactionId() {
         return transactionId;
@@ -96,17 +97,21 @@ public class TransactionHistoryRecord {
         this.type = type;
     }
 
-    private String formatDate(String oldDate) {
-        String newDate;
+
+    private String formatDate(String inputDate) {
+        String outputDate;
         try {
-            @SuppressLint("SimpleDateFormat") Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(oldDate);
-            newDate = String.valueOf(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", new Locale("ru")).format(date));
-
+            SimpleDateFormat inputFormat = new SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ss.SSS", new Locale("ru"));
+            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = inputFormat.parse(inputDate);
+            SimpleDateFormat outputFormat = new SimpleDateFormat(
+                    "dd.MM.yyyy HH:mm:ss", new Locale("ru"));
+            outputFormat.setTimeZone(TimeZone.getDefault());
+            outputDate = String.valueOf(outputFormat.format(date));
         } catch (ParseException e) {
-            newDate = oldDate.replace("-", ".").replace("T", " ")
-                    .substring(0, 19);
+            outputDate = inputDate;
         }
-        return newDate;
+        return outputDate;
     }
-
 }
