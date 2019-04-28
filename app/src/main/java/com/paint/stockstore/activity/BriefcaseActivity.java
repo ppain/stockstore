@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -174,11 +175,11 @@ public class BriefcaseActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void getFromCache() {
-        Single<List<InfoStock>> stock = briefcaseDao.getRxStock();
+        Maybe<List<InfoStock>> stock = briefcaseDao.getRxStock();
         stock.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(item -> {
-                            if (item.isEmpty()) {
+                            if (item.isEmpty() && Utils.isNetworkAvailable(getApplicationContext())) {
                                 getFromNetwork();
                             } else {
                                 setList(item);
