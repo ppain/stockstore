@@ -152,7 +152,7 @@ public class StockActivity extends AppCompatActivity {
                     Log.d("testing", "lastVisibleItemPosition: " + lastVisibleItemPosition
                             + ", adapterStock.getItemCount(): " + sizeList);
                     if (!isLoaded && (lastVisibleItemPosition > sizeList - Utils.HIDE_ITEM
-                             && Utils.isNetworkAvailable(getApplicationContext()))) {
+                            && Utils.isNetworkAvailable(getApplicationContext()))) {
                         isLoaded = true;
                         isLoading(true);
                         requestStock("", nextItemId);
