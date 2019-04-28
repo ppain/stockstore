@@ -94,7 +94,7 @@
         android:layout_gravity="center|top"
         android:layout_marginTop="@dimen/dp_20"
         android:text="@string/empty_list"
-        android:textSize="@dimen/sp_20"
+        android:textSize="@dimen/sp_18"
         android:visibility="invisible"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 

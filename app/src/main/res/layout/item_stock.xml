@@ -15,7 +15,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="3"
+        android:layout_weight="5"
         android:gravity="center|start"
         android:orientation="vertical">
 
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorBlack"
-            android:textSize="@dimen/sp_20" />
+            android:textSize="@dimen/sp_18" />
 
         <TextView
             android:id="@+id/tv_count_code_item"
@@ -36,7 +36,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"
+        android:layout_weight="6"
         android:gravity="center|end"
         android:orientation="vertical">
 
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorBlack"
-            android:textSize="@dimen/sp_20" />
+            android:textSize="@dimen/sp_18" />
 
         <TextView
             android:id="@+id/tv_priceDelta_date_item"
