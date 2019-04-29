@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/Toolbar" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,6 +51,7 @@
                 <TextView
                     android:layout_margin="@dimen/dp_5"
                     android:id="@+id/tv_name_item"
+                    android:textColor="@color/colorBlack"
                     android:layout_width="wrap_content"
                     android:layout_height="?attr/actionBarSize"
                     android:gravity="center"

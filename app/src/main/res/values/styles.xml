@@ -15,4 +15,9 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
+    <style name="collapsingToolbarLayoutTitleColor" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">@dimen/sp_25</item>
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
+
 </resources>

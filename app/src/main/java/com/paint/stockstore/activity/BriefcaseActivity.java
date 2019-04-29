@@ -93,6 +93,7 @@ public class BriefcaseActivity extends AppCompatActivity {
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_briefcase));
         collapsingToolbar = findViewById(R.id.collapsingToolbarLayout);
+        collapsingToolbar.setCollapsedTitleTextAppearance(R.style.collapsingToolbarLayoutTitleColor);
         collapsingToolbar.setTitle(getString(R.string.default_balance) + getString(R.string.space_bar) + getString(R.string.rub));
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_briefcase);
